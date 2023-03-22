@@ -1,55 +1,30 @@
 <?php
-if ($_SERVER['argc'] < 3) {
-    die("Invalid Syntax!\n{$_SERVER['argv'][0]} <scoop-emulator> <dir>\n");
-}
-$scoopEmu = $_SERVER['argv'][1];
-$installDir = $_SERVER['argv'][2];
-$bucket = json_decode(file_get_contents('/mnt/e/dev/scoop-emulators/bucket/'.substr($scoopEmu, 0, 1).'/'.$scoopEmu.'.json'), true);
-$extractDir = '';
-$bin = '';
-if (isset($bucket['extract_dir']))
-    $extractDir = $bucket['extract_dir'];
-if (isset($bucket['bin']))
-    $extractDir = $bucket['bin'];
-if (isset($bucket['architecture'])) {
-    if (isset($bucket['architecture']['extract_dir']))
-        $extractDir = $bucket['architecture']['extract_dir'];
-    if (isset($bucket['architecture']['bin']))
-        $bin = $bucket['architecture']['bin'];
-	if (isset($bucket['architecture']['64bit'])) {
-		$url = $bucket['architecture']['64bit']['url'];
-        if (isset($bucket['architecture']['64bit']['extract_dir']))
-            $extractDir = $bucket['architecture']['64bit']['extract_dir'];
-        if (isset($bucket['architecture']['64bit']['bin']))
-            $bin = $bucket['architecture']['64bit']['bin'];
-	} else {
-		$url = $bucket['architecture']['32bit']['url'];
-        if (isset($bucket['architecture']['32bit']['extract_dir']))
-            $extractDir = $bucket['architecture']['64bit']['extract_dir'];
-        if (isset($bucket['architecture']['32bit']['bin']))
-            $bin = $bucket['architecture']['32bit']['bin'];
-    }
-} else {
-	$url = $bucket['url'];
-}
-$bins = [];
-if (!is_array($bin) && $bin != '') {
-    if (!is_array($bin))
-        $bin = [$bin];
-    foreach ($bin as $idx => $subBin)
-        $bins[] = is_array($subBin) ? $subBin[0] : $subBin;
-}
-echo "echo \"$installDir => ".(is_array($url) ? implode(', ', $url) : $url)."\"\n";
-if (!is_array($url))
-    $url = [$url];
-foreach ($url as $urlUrl) {
-    $urlFile = basename($urlUrl);
-    if (!file_exists($urlFile))
-        passthru('wget --no-check-certificate -nv '.escapeshellarg($urlUrl)." -O ".escapeshellarg($urlFile)." || rm -f ".escapeshellarg($urlFile));
-    if (!file_exists(basename($urlUrl)))
-        echo "Error with $urlUrl\n";
-    else {
-        passthru('7z x -bb0 -aoa -o'.$installDir.' '.escapeshellarg($urlFile).($extractDir != '' ? ' '.escapeshellarg($extractDir).' && cp -af '.escapeshellarg($installDir.'/'.$extractDir).'/* '.escapeshellarg($installDir).'/ && rm -rf '.escapeshellarg($installDir.'/'.$extractDir) : ''));
-        unlink($urlFile);
+$data = json_decode(file_get_contents(__DIR__.'/found_emulators.json'), true);
+$results = [];
+foreach ($data['emus'] as $emuId => $emuData) {
+    $baseDir = __DIR__.'/new/'.$emuId;
+    $moveDir = $baseDir.'/extracted';
+    $finalDir = $baseDir.'/final';
+    if (!file_exists($finalDir)) {
+        echo "Emulator {$emuId}\n";
+        @mkdir($moveDir, 0777, true);
+        echo "  Downloading {$emuData['urls']}\n";
+        echo passthru('wget --max-redirect 100 -c '.escapeshellarg($emuData['urls']).' -O '.escapeshellarg($baseDir.'/'.basename($emuData['urls'])), $resultCode);
+        if ($resultCode != 0)
+            $results[] = 'dl '.$emuId;
+        echo "Got Exit Code {$resultCode}\n";
+        echo "  Extracting {$emuData['urls']}\n";
+        if (preg_match('/\.tar\.(xz|bz2|gz)$/i', $emuData['urls'])) {
+            echo passthru('tar -C'.escapeshellarg($moveDir).' -xvf '.escapeshellarg($baseDir.'/'.basename($emuData['urls'])), $resultCode);
+        } else {
+            echo passthru('7z x -bb0 -aoa -o'.escapeshellarg($moveDir).' '.escapeshellarg($baseDir.'/'.basename($emuData['urls'])), $resultCode);
+        }
+        if ($resultCode != 0)
+            $results[] = '7z '.$emuId;
+        echo "Got Exit Code {$resultCode}\n";
+        if (isset($emuData['extractDir']) && file_exists($moveDir.'/'.$emuData['extractDir']))
+            $moveDir .= '/'.$emuData['extractDir'];
+        rename($moveDir, $finalDir);
+        print_r($results);
     }
 }
