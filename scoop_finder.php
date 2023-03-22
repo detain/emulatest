@@ -1,93 +1,140 @@
 <?php
+
+function find($searchDir) {
+    echo "Searching {$searchDir}...";
+    //return file_get_contents($searchDir);
+    $cmd = 'find '.escapeshellarg($searchDir).' -type f';
+    //$tempFile = tempnam(sys_get_temp_dir(), 'find');
+    //$cmd = 'find '.escapeshellarg($searchDir).' -type f > '.$tempFile;
+    $return = `{$cmd}`;
+    /*echo "reading back file...";
+    $return = file_get_contents($tempFile);
+    echo "removing file...";
+    unlink($tempFile);*/
+    echo "done\n";
+    return $return;
+}
+
+class Bucket
+{
+    protected static $data;
+
+    public static function load($bucket) {
+        $letter = substr($bucket, 0, 1);
+        if (is_numeric($letter))
+            $letter = '#';
+        $fileName = '/mnt/e/dev/scoop-emulators/bucket/'.$letter.'/'.$bucket.'.json';
+        $data = json_decode(file_get_contents($fileName), true);
+        self::$data = $data;
+    }
+
+    public static function getExtracteDir() {
+        $extractDir = self::getField('extract_dir', true);
+        return $extractDir;
+    }
+
+    public static function getUrls() {
+        $urls = self::getField('url', true);
+        return $urls;
+    }
+
+    public static function getBins() {
+        $bins = self::getField('bin');
+        return $bins;
+    }
+
+    public static function getField($field = 'bin', $lastOnly = false) {
+        $bins = [];
+        foreach ([[], ['architecture'], ['architecture','32bit'], ['architecture','64bit']] as $sections) {
+            $var = self::$data;
+            if (count($sections) > 0) {
+                foreach ($sections as $section) {
+                    if (isset($var[$section])) {
+                        $var = $var[$section];
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (isset($var[$field])) {
+                if (!is_array($var[$field])) {
+                    $var[$field] = [$var[$field]];
+                }
+                foreach ($var[$field] as $bin) {
+                    if (is_array($bin)) {
+                        $bin = $bin[0];
+                    }
+                    if (!in_array($bin, $bins)) {
+                        $bins[] = $bin;
+                    }
+                }
+            }
+        }
+        if ($lastOnly === true) {
+            return array_pop($bins);
+        }
+        return $bins;
+    }
+
+    public static function getBucketList() {
+        $buckets = [];
+        foreach (glob('/mnt/e/dev/scoop-emulators/bucket/*/*.json') as $fileName) {
+            $buckets[] = basename($fileName, '.json');
+        }
+        return $buckets;
+    }
+}
+
+$buckets = Bucket::getBucketList();
+$out = [
+    'paths' => [],
+    'emus' => [],
+];
+$allBuckets = [];
+$bin2bucket = [];
+$regexes = [];
+$totalBins = 0;
+foreach ($buckets as $bucket) {
+    Bucket::load($bucket);
+    $bins = Bucket::getBins();
+    $urls = Bucket::getUrls();
+    $extractDir = Bucket::getExtracteDir();
+    $allBuckets[$bucket] = ['bins' => $bins, 'urls' => $urls];
+    if (!is_null($extractDir))
+        $allBuckets[$bucket]['extractDir'] = $extractDir;
+    foreach ($bins as $bin) {
+        $totalBins++;
+        $bin = strtolower(str_replace('\\', '/', $bin));
+        $regex = preg_quote($bin, '/');
+        if (!in_array($regex, $regexes))
+            $regexes[] = $regex;
+        if (!isset($bin2bucket[$bin]))
+            $bin2bucket[$bin] = [];
+        $bin2bucket[$bin][] = $bucket;
+    }
+    //echo "Bucket {$bucket}: ".implode(', ', $bins).' '.Bucket::getUrls().' '.Bucket::getExtracteDir()."\n";
+}
 if ($_SERVER['argc'] < 2) {
     die("Invalid Syntax!\n{$_SERVER['argv'][0]} <dir>\n");
 }
 $searchDir = $_SERVER['argv'][1];
-$bins = [];
-$regex = [];
-$totalBins = 0;
-foreach (glob('/mnt/e/dev/scoop-emulators/bucket/*/*.json') as $scoopFile) {
-    $scoopEmu = basename($scoopFile, '.json');
-    $bucket = json_decode(file_get_contents($scoopFile), true);
-    $extractDir = '';
-    $bin = [];
-    if (isset($bucket['url']))
-        $url = $bucket['url'];
-    if (isset($bucket['extract_dir']))
-        $extractDir = $bucket['extract_dir'];
-    if (isset($bucket['bin']))
-        $bin['any'] = $bucket['bin'];
-    if (isset($bucket['architecture'])) {
-        if (isset($bucket['architecture']['url']))
-            $url = $bucket['architecture']['url'];
-        if (isset($bucket['architecture']['extract_dir']))
-            $extractDir = $bucket['architecture']['extract_dir'];
-        if (isset($bucket['architecture']['bin']))
-            $bin['any'] = $bucket['architecture']['bin'];
-        if (isset($bucket['architecture']['64bit'])) {
-            if (isset($bucket['architecture']['64bit']['url']))
-                $url = $bucket['architecture']['64bit']['url'];
-            if (isset($bucket['architecture']['64bit']['extract_dir']))
-                $extractDir = $bucket['architecture']['64bit']['extract_dir'];
-            if (isset($bucket['architecture']['64bit']['bin']))
-                $bin['64bit'] = $bucket['architecture']['64bit']['bin'];
-        }
-        if (isset($bucket['architecture']['32bit'])) {
-            if (isset($bucket['architecture']['32bit']['url']))
-                $url = $bucket['architecture']['32bit']['url'];
-            if (isset($bucket['architecture']['32bit']['extract_dir']))
-                $extractDir = $bucket['architecture']['64bit']['extract_dir'];
-            if (isset($bucket['architecture']['32bit']['bin']))
-                $bin['32bit'] = $bucket['architecture']['32bit']['bin'];
-        }
-    }
-    foreach ($bin as $bits => $realBin) {
-        if (!is_array($realBin)) {
-            if ($realBin == '')
-                continue;
-            $realBin = [$realBin];
-        }
-        foreach ($realBin as $subBin) {
-            $subBin = strtolower(str_replace('\\', '/', is_array($subBin) ? $subBin[0] : $subBin));
-            $subBin = basename($subBin);
-            if (!array_key_exists($subBin, $bins)) {
-                $bins[$subBin] = [];
-                $regex[] = preg_quote($subBin, '/');
-            }
-            if (!array_key_exists($bits, $bins[$subBin]))
-                $bins[$subBin][$bits] = [];
-            $bins[$subBin][$bits][] = $scoopEmu;
-            $totalBins++;
+echo "Found ".$totalBins." Bins and ".count($bins)." Unique Bins to search for\n";
+if (!preg_match_all('/^.*\/('.implode('|', array_values($regexes)).')$/imu', find($searchDir), $matches))
+  die("No matches were found\n");
+$fileEmus = [];
+foreach ($matches[0] as $idx => $fileName) {
+    if (!isset($bin2bucket[strtolower($matches[1][$idx])])) {
+        echo "Cant find {$matches[1][$idx]} in: ".implode(',', array_keys($bin2bucket))."\n";
+    } else {
+        $dirName = substr($fileName, 0, 0 - (strlen($matches[1][$idx]) + 1));
+        $fileEmus[$dirName] = $bin2bucket[strtolower($matches[1][$idx])];
+        $out['paths'][$dirName] = $fileEmus[$dirName];
+        foreach ($bin2bucket[strtolower($matches[1][$idx])] as $emu) {
+            $out['emus'][$emu] = $allBuckets[$emu];
         }
     }
 }
-ksort($bins);
-//file_put_contents('bins.json', json_encode($bins, JSON_PRETTY_PRINT));
-echo "Found ".$totalBins." Bins and ".count($bins)." Unique Bins to search for, searching {$searchDir}\n";
-if (!preg_match_all('/^.*\/('.implode('|', array_values(array_unique($regex))).')$/imu', `find {$searchDir} -type f`, $matches))
-    die("No matches were found\n");
-$binMatches = $matches[0];
-echo "Found ".count($binMatches)." Bin Matches\n";
-//file_put_contents('binMatches.txt', implode("\n", $binMatches));
-$dirs = [];
-foreach  ($binMatches as $binMatch) {
-    $dir = dirname($binMatch);
-    if (!isset($dirs[$dir]))
-        $dirs[$dir] = [];
-    foreach ($bins[basename(strtolower($binMatch))] as $subBits => $subBins) {
-        foreach ($subBins as $scoopEmu) {
-            if (!in_array($scoopEmu, $dirs[$dir]))
-                $dirs[$dir][] = $scoopEmu;
-/*                $cmd = 'file '.escapeshellarg($binMatch);
-                $mime = trim(`{$cmd}`);
-                $bits = preg_match('/PE32.*x86-64/', $mime) ? '64bit' : (preg_match('/PE32.*80386/', $mime) ? '32bit' : 'any');
-*/
-                //echo "File {$binMatch} Match {$scoopEmu} Sub Bits {$subBits}\n";
-        }
-    }
-}
-file_put_contents('results.json', json_encode($dirs, JSON_PRETTY_PRINT));
-foreach ($dirs as $dir => $scoopEmus) {
-    echo $dir.' - '.implode(', ', $scoopEmus).PHP_EOL;
-}
-
+file_put_contents('found_emulators.json', json_encode($out, JSON_PRETTY_PRINT));
+/*foreach ($fileEmus as $fileName => $emus) {
+    echo $fileName.': '.implode(', ', $emus)."\n";
+}*/
