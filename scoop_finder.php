@@ -1,4 +1,15 @@
 <?php
+/*
+wget https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip
+unzip -o master.zip
+rm -f master.zip
+find scoop-emulators-master/bucket -name "*.json"
+
+Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
+Expand-Archive -Path "master.zip" -DestinationPath "./" -Force
+Remove-Item -Path "master.zip" -Force
+Get-ChildItem -Path "scoop-emulators-master/bucket" -Filter "*.json" -Recurse
+*/
 
 function find($searchDir) {
     echo "Searching {$searchDir}...";
@@ -44,36 +55,30 @@ class Bucket
     }
 
     public static function getField($field = 'bin', $lastOnly = false) {
-        $bins = [];
+        $return = [];
         foreach ([[], ['architecture'], ['architecture','32bit'], ['architecture','64bit']] as $sections) {
             $var = self::$data;
-            if (count($sections) > 0) {
+            if (count($sections) > 0)
                 foreach ($sections as $section) {
-                    if (isset($var[$section])) {
+                    if (isset($var[$section]))
                         $var = $var[$section];
-                    } else {
+                    else
                         break;
-                    }
                 }
-            }
             if (isset($var[$field])) {
-                if (!is_array($var[$field])) {
+                if (!is_array($var[$field]))
                     $var[$field] = [$var[$field]];
-                }
-                foreach ($var[$field] as $bin) {
-                    if (is_array($bin)) {
-                        $bin = $bin[0];
-                    }
-                    if (!in_array($bin, $bins)) {
-                        $bins[] = $bin;
-                    }
+                foreach ($var[$field] as $value) {
+                    if (is_array($value))
+                        $value = $value[0];
+                    if (!in_array($value, $return))
+                        $return[] = $value;
                 }
             }
         }
-        if ($lastOnly === true) {
-            return array_pop($bins);
-        }
-        return $bins;
+        if ($lastOnly === true)
+            return array_pop($return);
+        return $return;
     }
 
     public static function getBucketList() {
