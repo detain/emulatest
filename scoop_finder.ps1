@@ -3,7 +3,7 @@ $LoadedBucketData = @{}
 $LoadedBucketName = ''
 $LoadedBuckets = @{}
 
-function Is-Numeric ($Value) {
+function Compare-Numeric ($Value) {
     return $Value -match "^[\d\.]+$"
 }
 
@@ -12,20 +12,20 @@ function Get-Bucket-ExtracteDir() {
     return $extractDir
 }
 
-function Get-Bucket-Urls() {
+function Get-Bucket-Url() {
     $urls = Get-Bucket-Field('extract_dir')
     return $urls
 }
 
-function Get-Bucket-Bins() {
+function Get-Bucket-Bin() {
     $bins = Get-Bucket-Field('extract_dir')
     return $bins
 }
 
-function Load-Bucket ($Bucket) {
+function Restore-Bucket ($Bucket) {
     if ($LoadedBucketName -ne $Bucket) {
         $letter = $Bucket.Substring(0, 1)
-        if (Is-Numeric $letter) {
+        if (Compare-Numeric $letter) {
             $letter     = "#"
             $fileName   = "/mnt/e/dev/scoop-emulators/bucket/$letter/$Bucket.json"
             $data       = Get-Content $fileName | ConvertFrom-Json
@@ -38,7 +38,7 @@ function Load-Bucket ($Bucket) {
 }
 
 function Get-Bucket-Field($bucketFile, $field = 'bin', $lastOnly = $false) {
-    $data = Load-Bucket($bucketFile)
+    $data = Restore-Bucket($bucketFile)
     $return = @()
     $sections = @(@(), @('architecture'), @('architecture', '32bit'), @('architecture', '64bit'))
     $sections | ForEach-Object {
@@ -85,7 +85,7 @@ function Get-BucketList {
     return $buckets
 }
 
-function Extract-Repo {
+function Expand-Repo {
     Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
     Expand-Archive -Path "master.zip" -DestinationPath "./" -Force
     Remove-Item -Path "master.zip" -Force
@@ -105,10 +105,10 @@ $regexes = @()
 $totalBins = 0
 $buckets | ForEach-Object {
     $bucket = $_
-    $BucketData = [Bucket]::load($bucket)
-    $bins = [Bucket]::getBins()
-    $urls = [Bucket]::getUrls()
-    $extractDir = [Bucket]::getExtracteDir()
+    $BucketData = Restore-Bucket($bucket)
+    $bins = Get-Bucket-Bin
+    $urls = Get-Bucket-Url
+    $extractDir = Get-Bucket-ExtracteDir
     $allBuckets[$bucket] = @{
         'bins' = $bins
         'urls' = $urls
@@ -129,7 +129,7 @@ $buckets | ForEach-Object {
         }
         $bin2bucket[$bin] += $bucket
     }
-    Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), (Get-Bucket-Urls), (Get-Bucket-ExtracteDir))
+    Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), (Get-Bucket-Url), (Get-Bucket-ExtracteDir))
 }
 
 #$searchDir = $args[0]
