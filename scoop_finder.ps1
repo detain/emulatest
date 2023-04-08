@@ -1,4 +1,4 @@
-$BucketNames = @()
+$bucketNames = @()
 $LoadedBucketData = @{}
 $LoadedBucketName = ''
 $LoadedBuckets = @{}
@@ -17,7 +17,7 @@ function Expand-Repo {
 
 function Get-BucketCollection {
     $bucketNames = @()
-    Get-ChildItem '/mnt/e/dev/scoop-emulators/bucket/*/*.json' | ForEach-Object {
+    Get-ChildItem 'scoop-emulators-master/bucket/*/*.json' | ForEach-Object {
         $fileName = $_
         $bucketNames += [System.IO.Path]::GetFileNameWithoutExtension($fileName)
     }
@@ -33,7 +33,7 @@ function Restore-Bucket ($Bucket) {
         $letter = $Bucket.Substring(0, 1)
         if (Compare-Numeric $letter) {
             $letter     = "#"
-            $fileName   = "/mnt/e/dev/scoop-emulators/bucket/$letter/$Bucket.json"
+            $fileName   = "scoop-emulators-master/bucket/$letter/$Bucket.json"
             $data       = Get-Content $fileName | ConvertFrom-Json
             $LoadedBucketData = $data
             $LoadedBucketName = $Bucket
@@ -132,8 +132,8 @@ function Find-Bucket-Matches {
     #$searchDir = $args[0]
     $searchDir = "F:\Consoles\RetroBat"
     Write-Output "Found $totalBins Bins and $($bins.Count) Unique Bins to search for"
-    $regexesPattern = '(' + [string]::Join('|', ($regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
-    $regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexesPattern) -Pattern $regexesPattern -AllMatches | Select-Object -ExpandProperty Matches
+    $regexPattern = '(' + [string]::Join('|', ($regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
+    $regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexPattern) -Pattern $regexPattern -AllMatches | Select-Object -ExpandProperty Matches
     return $regexMatches;
 }
 
