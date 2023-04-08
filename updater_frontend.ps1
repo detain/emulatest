@@ -100,8 +100,8 @@ $scanButton.Add_Click({
     # You can use $table.Rows.Add to add rows to the table
 
     # Example code to add a row to the table:
-    $row = $table.Rows.Add($false, "C:\Emulators\SNES", "snes9x", "1.60", "1.61")
-    $row = $table.Rows.Add($false, "C:\Emulators\cemu", "cemu", "1.0", "1.1")
+    $table.Rows.Add($false, "C:\Emulators\SNES", "snes9x", "1.60", "1.61")
+    $table.Rows.Add($false, "C:\Emulators\cemu", "cemu", "1.0", "1.1")
 })
 
 

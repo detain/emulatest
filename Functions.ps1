@@ -19,8 +19,8 @@ $ScanPathButton.Add_Click({
     # PowerShell script code to scan paths for emulators and get their current and new versions
     # You can use $EmulatorsTable.Rows.Add to add rows to the table
     # Example code to add a row to the table:
-    $row = $EmulatorsTable.Rows.Add($false, "C:\Emulators\SNES", "snes9x", "1.60", "1.61")
-    $row = $EmulatorsTable.Rows.Add($false, "C:\Emulators\cemu", "cemu", "1.0", "1.1")
+    $EmulatorsTable.Rows.Add($false, "C:\Emulators\SNES", "snes9x", "1.60", "1.61")
+    $EmulatorsTable.Rows.Add($false, "C:\Emulators\cemu", "cemu", "1.0", "1.1")
 })
 $UpdateButton.Add_Click({
     $LogText.AppendText("Starting update selected emulators..." + [Environment]::NewLine)

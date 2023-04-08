@@ -12,15 +12,15 @@ if ($doStep1 -eq $true) {
         $finalDir = "$baseDir/final"
 
         if (!(Test-Path $finalDir)) {
-            Write-Host "Emulator $emuId"
+            Write-Output "Emulator $emuId"
             New-Item -ItemType Directory -Path $moveDir -Force | Out-Null
-            Write-Host "  Downloading $($emuData.urls)"
+            Write-Output "  Downloading $($emuData.urls)"
             $resultCode = cmd /c "wget --max-redirect 100 -c $($emuData.urls) -O `"$($baseDir)/$($emuData.urls | Split-Path -Leaf)`""
             if ($resultCode -ne 0) {
                 $results += "dl $emuId"
             }
-            Write-Host "Got Exit Code $resultCode"
-            Write-Host "  Extracting $($emuData.urls)"
+            Write-Output "Got Exit Code $resultCode"
+            Write-Output "  Extracting $($emuData.urls)"
             if ($emuData.urls -match '\.tar\.(xz|bz2|gz)$') {
                 $resultCode = cmd /c "tar -C `"$moveDir`" -xvf `"$($baseDir)/$($emuData.urls | Split-Path -Leaf)`""
             } else {
@@ -29,7 +29,7 @@ if ($doStep1 -eq $true) {
             if ($resultCode -ne 0) {
                 $results += "7z $emuId"
             }
-            Write-Host "Got Exit Code $resultCode"
+            Write-Output "Got Exit Code $resultCode"
             if ($emuData.extractDir -and (Test-Path "$moveDir/$($emuData.extractDir)")) {
                 $moveDir += "/$($emuData.extractDir)"
             }
@@ -43,7 +43,7 @@ if ($doStep2 -eq $true) {
     foreach ($emuPath in $data.paths.Keys) {
         $emus = $data.paths[$emuPath]
         if ($emus.Count -ne 1) {
-            Write-Host "Wrong count of emus ($($emus -join ','))"
+            Write-Output "Wrong count of emus ($($emus -join ','))"
             continue
         }
         $emuId = $emus[0]
@@ -51,11 +51,16 @@ if ($doStep2 -eq $true) {
         $baseDir = "$PSScriptRoot/new/$emuId"
         $backupZip = "$baseDir/backup_$emuId_$($emuPath -replace '/', '_')_$(Get-Date -Format yyyyMMdd).zip"
         $finalDir = "$baseDir/final"
-
+        if ($doBackup && !Test-Path $backupZip) {
+            Write-Output "  Backing up to $backupZip";
+            $escapedBackupZip = [System.Management.Automation.WildcardPattern]::Escape($backupZip)
+            $escapedEmuPath = [System.Management.Automation.WildcardPattern]::Escape($emuPath)
+            & 'zip.exe' '-r' $escapedBackupZip $escapedEmuPath | Write-Output
+        }
         if (Test-Path $finalDir) {
-            Write-Host "Emulator $emuId $finalDir => $emuPath"
+            Write-Output "Emulator $emuId $finalDir => $emuPath"
             $cmd = "cp -afv `"$finalDir/*`" `"$emuPath/`""
-            Write-Host $cmd
+            Write-Output $cmd
             cmd /c $cmd
         }
     }
