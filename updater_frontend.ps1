@@ -1,7 +1,7 @@
 # https://domruggeri.com/2019/07/06/creating-extensive-powershell-gui-applications-part-1/
 # https://domruggeri.com/2019/07/09/creating-extensive-powershell-gui-applications-part-2/
 # https://learn.microsoft.com/en-us/powershell/scripting/samples/selecting-items-from-a-list-box?view=powershell-7.3
-# Convert-Form -Path "E:\dev\WindowsFormsApp1\Form1.Designer.cs" -Destination "E:\dev\emulatest\converted" -Encoding ascii -force
+# Convert-Form -Path "E:\dev\EmulatestWindowsApp\MainWindow.Designer.cs" -Destination "E:\dev\emulatest\converted" -Encoding unicode -asFunction -Force -Verbose
 
 
 # Start by importing the Windows Forms assembly:

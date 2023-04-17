@@ -143,3 +143,31 @@ file_put_contents('found_emulators.json', json_encode($out, JSON_PRETTY_PRINT));
 /*foreach ($fileEmus as $fileName => $emus) {
     echo $fileName.': '.implode(', ', $emus)."\n";
 }*/
+
+function getField($field = 'bin', $lastOnly = false) {
+    $return = [];
+    foreach ([[], ['architecture'], ['architecture','32bit'], ['architecture','64bit']] as $sections) {
+        $var = $GLOBALS['LoadedBucketData'];
+        if (count($sections) > 0)
+            foreach ($sections as $section) {
+                if (isset($var[$section]))
+                    $var = $var[$section];
+                else
+                    break;
+            }
+        if (isset($var[$field])) {
+            if (!is_array($var[$field]))
+                $var[$field] = [$var[$field]];
+            foreach ($var[$field] as $value) {
+                if (is_array($value))
+                    $value = $value[0];
+                if (!in_array($value, $return))
+                    $return[] = $value;
+            }
+        }
+    }
+    if ($lastOnly === true)
+        return array_pop($return);
+    return $return;
+}
+

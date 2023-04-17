@@ -1,13 +1,12 @@
-$bucketNames = @()
-$LoadedBucketData = @{}
-$LoadedBucketName = ''
-$LoadedBuckets = @{}
-$regexMatches = @{}
-$allBuckets = @{}
-$bin2bucket = @{}
-$regexes = @()
-$totalBins = 0
-
+$global:bucketNames = @()
+$global:LoadedBucketData = @{}
+$global:LoadedBucketName = ''
+$global:LoadedBuckets = @{}
+$global:regexMatches = @{}
+$global:allBuckets = @{}
+$global:bin2bucket = @{}
+$global:regexes = @()
+$global:totalBins = 0
 
 function Expand-Repo {
     Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
@@ -16,12 +15,12 @@ function Expand-Repo {
 }
 
 function Get-BucketCollection {
-    $bucketNames = @()
+    $global:bucketNames = @()
     Get-ChildItem 'scoop-emulators-master/bucket/*/*.json' | ForEach-Object {
         $fileName = $_
-        $bucketNames += [System.IO.Path]::GetFileNameWithoutExtension($fileName)
+        $global:bucketNames += [System.IO.Path]::GetFileNameWithoutExtension($fileName)
     }
-    return $bucketNames
+    return $global:bucketNames
 }
 
 function Compare-Numeric ($Value) {
@@ -29,57 +28,35 @@ function Compare-Numeric ($Value) {
 }
 
 function Restore-Bucket ($Bucket) {
-    if ($LoadedBucketName -ne $Bucket) {
+    if ($global:LoadedBucketName -ne $Bucket) {
         $letter = $Bucket.Substring(0, 1)
         if (Compare-Numeric $letter) {
             $letter     = "#"
-            $fileName   = "scoop-emulators-master/bucket/$letter/$Bucket.json"
-            $data       = Get-Content $fileName | ConvertFrom-Json
-            $LoadedBucketData = $data
-            $LoadedBucketName = $Bucket
-            $LoadedBuckets[$LoadedBucketName] = $LoadedBucketData
         }
+        $fileName   = "scoop-emulators-master/bucket/$letter/$Bucket.json"
+        $data       = Get-Content $fileName | ConvertFrom-Json -AsHashtable
+        $global:LoadedBucketData = $data
+        $global:LoadedBucketName = $Bucket
+        $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
     }
-    return $LoadedBucketData
 }
 
-function Get-Bucket-Field($bucketFile, $field = 'bin', $lastOnly = $false) {
-    $data = Restore-Bucket($bucketFile)
-    $return = @()
-    $sections = @(@(), @('architecture'), @('architecture', '32bit'), @('architecture', '64bit'))
-    $sections | ForEach-Object {
-        $section = $_
-        $var = $data
-        if ($section.Count -gt 0) {
-            $section | ForEach-Object {
-                $s = $_
-                if ($var.$s) {
-                    $var = $var.$s
-                } else {
-                    break
-                }
-            }
+function Get-Bucket-Field($field = 'bin', $lastOnly = $false) {
+    if ($global:LoadedBucketData.architecture) {
+        if ($global:LoadedBucketData.architecture['64bit'] -and $global:LoadedBucketData.architecture['64bit'][$field]) {
+            return $global:LoadedBucketData.architecture['64bit'][$field]
         }
-        if ($var.$field) {
-            $values = $var.$field
-            if (-not $values.GetType().IsArray) {
-                $values = @($values)
-            }
-            $values | ForEach-Object {
-                $value = $_
-                if ($value.GetType().IsArray) {
-                    $value = $value[0]
-                }
-                if (-not $return.Contains($value)) {
-                    $return += $value
-                }
-            }
+        if ($global:LoadedBucketData.architecture['32bit'] -and $global:LoadedBucketData.architecture['32bit'][$field]) {
+            return $global:LoadedBucketData.architecture['32bit'][$field]
+        }
+        if ($global:LoadedBucketData.architecture[$field]) {
+            return $global:LoadedBucketData.architecture[$field]
         }
     }
-    if ($lastOnly) {
-        return $return[-1]
+    if ($global:LoadedBucketData[$field]) {
+        return $global:LoadedBucketData[$field]
     }
-    return $return
+    return ''
 }
 
 function Get-Bucket-ExtracteDir() {
@@ -88,53 +65,52 @@ function Get-Bucket-ExtracteDir() {
 }
 
 function Get-Bucket-Url() {
-    $urls = Get-Bucket-Field('extract_dir')
+    $urls = Get-Bucket-Field('url')
     return $urls
 }
 
 function Get-Bucket-Bin() {
-    $bins = Get-Bucket-Field('extract_dir')
+    $bins = Get-Bucket-Field('bin')
     return $bins
 }
 
 function Read-BucketCollection {
-    $bucketNames | ForEach-Object {
+    $global:bucketNames | ForEach-Object {
         $bucket = $_
         Restore-Bucket($bucket)
         $bins = Get-Bucket-Bin
         $urls = Get-Bucket-Url
         $extractDir = Get-Bucket-ExtracteDir
-        $allBuckets[$bucket] = @{
+        $global:allBuckets[$bucket] = @{
             'bins' = $bins
             'urls' = $urls
         }
         if (-not [string]::IsNullOrWhiteSpace($extractDir)) {
-            $allBuckets[$bucket]['extractDir'] = $extractDir
+            $global:allBuckets[$bucket]['extractDir'] = $extractDir
         }
         $bins | ForEach-Object {
             $bin = $_
-            $totalBins++
+            $global:totalBins++
             $bin = $bin.ToLower().Replace('\', '/')
             $regex = [regex]::Escape($bin)
-            if (-not $regexes.Contains($regex)) {
-                $regexes += $regex
+            if (-not $global:regexes.Contains($regex)) {
+                $global:regexes += $regex
             }
-            if (-not $bin2bucket.ContainsKey($bin)) {
-                $bin2bucket[$bin] = @()
+            if (-not $global:bin2bucket.ContainsKey($bin)) {
+                $global:bin2bucket[$bin] = @()
             }
-            $bin2bucket[$bin] += $bucket
+            $global:bin2bucket[$bin] += $bucket
         }
-        Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), (Get-Bucket-Url), (Get-Bucket-ExtracteDir))
+        Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), ($urls), ($extractDir))
     }
 }
 
 function Find-Bucket-Matches {
     #$searchDir = $args[0]
     $searchDir = "F:\Consoles\RetroBat"
-    Write-Output "Found $totalBins Bins and $($bins.Count) Unique Bins to search for"
-    $regexPattern = '(' + [string]::Join('|', ($regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
-    $regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexPattern) -Pattern $regexPattern -AllMatches | Select-Object -ExpandProperty Matches
-    return $regexMatches;
+    Write-Output "Found $global:totalBins Bins and $($bins.Count) Unique Bins to search for"
+    $regexPattern = '(' + [string]::Join('|', ($global:regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
+    $global:regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexPattern) -Pattern $regexPattern -AllMatches | Select-Object -ExpandProperty Matches
 }
 
 
@@ -144,19 +120,19 @@ function Find-Emu-Matches {
         'emus' = @()
     }
     $fileEmus = @{}
-    $regexMatches | ForEach-Object {
+    $global:regexMatches | ForEach-Object {
         $regexMatch = $_
         $fileName = $regexMatch.Value
         $bin = $regexMatch.Groups[1].Value.ToLower()
-        if (-not $bin2bucket.ContainsKey($bin)) {
-            Write-Output "Cant find $bin in: $($bin2bucket.Keys -join ', ')"
+        if (-not $global:bin2bucket.ContainsKey($bin)) {
+            Write-Output "Cant find $bin in: $($global:bin2bucket.Keys -join ', ')"
         } else {
             $dirName = Split-Path $fileName -Parent
-            $fileEmus[$dirName] = $bin2bucket[$bin]
+            $fileEmus[$dirName] = $global:bin2bucket[$bin]
             $out.paths[$dirName] = $fileEmus[$dirName]
-            $bin2bucket[$bin] | ForEach-Object {
+            $global:bin2bucket[$bin] | ForEach-Object {
                 $emu = $_
-                $out.emus[$emu] = $allBuckets[$emu]
+                $out.emus[$emu] = $global:allBuckets[$emu]
             }
         }
     }
@@ -166,7 +142,7 @@ function Find-Emu-Matches {
 Expand-Repo
 Get-BucketCollection
 Read-BucketCollection
-$regexMatches = Find-Bucket-Matches
+Find-Bucket-Matches
 $out = Find-Emu-Matches
 $out | ConvertTo-Json -Depth 10 | Set-Content -Path 'found_emulators.json'
-
+Remove-Item -Path scoop-emulators-master -Recurse -Force
