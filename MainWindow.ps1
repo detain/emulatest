@@ -8,7 +8,7 @@
  #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
 #
-#  Invocation Line   : Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" -Destination "E:\dev\emulatest" -Encoding ascii -Force -Verbose
+#  Invocation Line   : Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" `
 
 #  Source            : E:\dev\emulatest-windows-form\MainWindow.Designer.cs
 ################################################################################
@@ -379,12 +379,7 @@ $MainWindow.Controls.Add($PathsGroup)
 $MainWindow.Name = "MainWindow"
 $MainWindow.Text = "Emulatest"
 
-function On_MainWindow {
-	[void][System.Windows.Forms.MessageBox]::Show("The event handler MainWindow.Add_ is not implemented.")
-}
-
-$MainWindow.Add_( { On_MainWindow } )
-
+. (".\Functions.ps1")
 
 function OnFormClosing_MainWindow{ 
 	# $this parameter is equal to the sender (object)
@@ -403,3 +398,4 @@ $MainWindow.Add_Shown({$MainWindow.Activate()})
 $ModalResult=$MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()
+
