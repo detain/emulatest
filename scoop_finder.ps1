@@ -139,10 +139,10 @@ function Find-Emu-Matches {
     return $out
 }
 
-Expand-Repo
-Get-BucketCollection
-Read-BucketCollection
-Find-Bucket-Matches
-$out = Find-Emu-Matches
-$out | ConvertTo-Json -Depth 10 | Set-Content -Path 'found_emulators.json'
-Remove-Item -Path scoop-emulators-master -Recurse -Force
+#Expand-Repo
+#Get-BucketCollection
+#Read-BucketCollection
+#Find-Bucket-Matches
+#$out = Find-Emu-Matches
+#$out | ConvertTo-Json -Depth 10 | Set-Content -Path 'found_emulators.json'
+#Remove-Item -Path scoop-emulators-master -Recurse -Force

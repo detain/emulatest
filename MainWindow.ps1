@@ -1,6 +1,6 @@
-################################################################################ 
+################################################################################
 #
-#  Name    : E:\dev\emulatest\MainWindow.ps1  
+#  Name    : E:\dev\emulatest\MainWindow.ps1
 #  Version : 0.1
 #  Author  :
 #  Date    : 4/17/2023
@@ -327,12 +327,11 @@ $EmulatorsGroup.Text = "Discovered Emulators"
 # EmulatorsTable
 #
 $EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
-$EmulatorsTable.Columns.AddRange(@(
-$Select,
+$EmulatorsTable.Columns.AddRange($Select,
 $Path,
 $Emulator,
 $CurrentVersion,
-$NewVersion))
+$NewVersion)
 $EmulatorsTable.Location = New-Object System.Drawing.Point(6, 19)
 $EmulatorsTable.Name = "EmulatorsTable"
 $EmulatorsTable.Size = New-Object System.Drawing.Size(554, 150)
@@ -379,9 +378,10 @@ $MainWindow.Controls.Add($PathsGroup)
 $MainWindow.Name = "MainWindow"
 $MainWindow.Text = "Emulatest"
 
+. (".\scoop_finder.ps1")
 . (".\Functions.ps1")
 
-function OnFormClosing_MainWindow{ 
+function OnFormClosing_MainWindow{
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
