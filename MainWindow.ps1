@@ -1,9 +1,9 @@
-################################################################################
+################################################################################ 
 #
-#  Name    : E:\dev\emulatest\MainWindow.ps1
+#  Name    : E:\dev\emulatest\MainWindow.ps1  
 #  Version : 0.1
 #  Author  :
-#  Date    : 4/17/2023
+#  Date    : 4/18/2023
 #
  #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
@@ -133,6 +133,7 @@ $LogGroup.Text = "Log"
 #
 $LogText.Location = New-Object System.Drawing.Point(6, 19)
 $LogText.Name = "LogText"
+$LogText.ReadOnly = $true
 $LogText.Size = New-Object System.Drawing.Size(274, 118)
 $LogText.TabIndex = 0
 $LogText.Text = ""
@@ -327,13 +328,15 @@ $EmulatorsGroup.Text = "Discovered Emulators"
 # EmulatorsTable
 #
 $EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
-$EmulatorsTable.Columns.AddRange($Select,
+$EmulatorsTable.Columns.AddRange(
+$Select,
 $Path,
 $Emulator,
 $CurrentVersion,
 $NewVersion)
 $EmulatorsTable.Location = New-Object System.Drawing.Point(6, 19)
 $EmulatorsTable.Name = "EmulatorsTable"
+$EmulatorsTable.ReadOnly = $true
 $EmulatorsTable.Size = New-Object System.Drawing.Size(554, 150)
 $EmulatorsTable.TabIndex = 0
 #
@@ -341,6 +344,7 @@ $EmulatorsTable.TabIndex = 0
 #
 $Select.HeaderText = ""
 $Select.Name = "Select"
+$Select.ReadOnly = $true
 $Select.Resizable = [System.Windows.Forms.DataGridViewTriState]::False
 $Select.Width = 30
 #
@@ -348,24 +352,28 @@ $Select.Width = 30
 #
 $Path.HeaderText = "Path"
 $Path.Name = "Path"
+$Path.ReadOnly = $true
 $Path.Width = 200
 #
 # Emulator
 #
 $Emulator.HeaderText = "Emulator"
 $Emulator.Name = "Emulator"
+$Emulator.ReadOnly = $true
 $Emulator.Width = 120
 #
 # CurrentVersion
 #
 $CurrentVersion.HeaderText = "Current Version"
 $CurrentVersion.Name = "CurrentVersion"
+$CurrentVersion.ReadOnly = $true
 $CurrentVersion.Width = 80
 #
 # NewVersion
 #
 $NewVersion.HeaderText = "New Version"
 $NewVersion.Name = "NewVersion"
+$NewVersion.ReadOnly = $true
 $NewVersion.Width = 80
 #
 # MainWindow
@@ -381,7 +389,7 @@ $MainWindow.Text = "Emulatest"
 . (".\scoop_finder.ps1")
 . (".\Functions.ps1")
 
-function OnFormClosing_MainWindow{
+function OnFormClosing_MainWindow{ 
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
@@ -394,18 +402,7 @@ function OnFormClosing_MainWindow{
 
 $MainWindow.Add_FormClosing( { OnFormClosing_MainWindow} )
 
-$MainWindow.Add_Shown({
-	$MainWindow.Activate()
-	Write-Host "MainWindow Activated"
-	$LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
-	Expand-Repo
-	$LogText.AppendText("Loading data files..." + [Environment]::NewLine);
-	Get-BucketCollection
-	$LogText.AppendText("Adding to list..." + [Environment]::NewLine)
-	$BucketsList.Items.AddRange($global:bucketNames);
-	$LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
-	
-})
+$MainWindow.Add_Shown({$MainWindow.Activate()})
 $ModalResult=$MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()

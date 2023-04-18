@@ -30,5 +30,16 @@ $UpdateButton.Add_Click({
 })
 $LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
 
-
-
+$MainWindow.Add_Shown({
+	$MainWindow.Activate()
+	
+	Write-Host "MainWindow Activated"
+	$LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
+	Expand-Repo
+	$LogText.AppendText("Loading data files..." + [Environment]::NewLine);
+	Get-BucketCollection
+	$LogText.AppendText("Adding to list..." + [Environment]::NewLine)
+	$BucketsList.Items.AddRange($global:bucketNames);
+	$LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
+	
+})
