@@ -394,8 +394,20 @@ function OnFormClosing_MainWindow{
 
 $MainWindow.Add_FormClosing( { OnFormClosing_MainWindow} )
 
-$MainWindow.Add_Shown({$MainWindow.Activate()})
+$MainWindow.Add_Shown({
+	$MainWindow.Activate()
+	Write-Host "MainWindow Activated"
+	$LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
+	Expand-Repo
+	$LogText.AppendText("Loading data files..." + [Environment]::NewLine);
+	Get-BucketCollection
+	$LogText.AppendText("Adding to list..." + [Environment]::NewLine)
+	$BucketsList.Items.AddRange($global:bucketNames);
+	$LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
+	
+})
 $ModalResult=$MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()
+
 
