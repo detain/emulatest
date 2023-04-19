@@ -38,8 +38,21 @@ $MainWindow.Add_Shown({
 	Expand-Repo
 	$LogText.AppendText("Loading data files..." + [Environment]::NewLine);
 	Get-BucketCollection
+    $BucketsLoadedText.Text = $global:bucketNames.Count
 	$LogText.AppendText("Adding to list..." + [Environment]::NewLine)
 	$BucketsList.Items.AddRange($global:bucketNames);
 	$LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
 	
 })
+
+function BucketSelected($sender, $eventArgs) {
+    # Get the selected item
+    $selectedIndex = $sender.SelectedIndex
+    $selectedItem = $sender.SelectedItem
+
+    # Do something with the selected item
+    Write-Host "Selected item: $selectedItem"
+}
+
+# Add the SelectedIndexChanged event handler to the ListBox
+$BucketsList.Add_SelectedIndexChanged({BucketSelected $BucketsList $_})
