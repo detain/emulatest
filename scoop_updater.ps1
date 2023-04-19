@@ -23,7 +23,8 @@ if ($doStep1 -eq $true) {
             Write-Output "  Extracting $($emuData.urls)"
             if ($emuData.urls -match '\.tar\.(xz|bz2|gz)$') {
                 $resultCode = cmd /c "tar -C `"$moveDir`" -xvf `"$($baseDir)/$($emuData.urls | Split-Path -Leaf)`""
-            } else {
+            }
+            else {
                 $resultCode = cmd /c "7z x -bb0 -aoa -o`"$moveDir`" `"$($baseDir)/$($emuData.urls | Split-Path -Leaf)`""
             }
             if ($resultCode -ne 0) {

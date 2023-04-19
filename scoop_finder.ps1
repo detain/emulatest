@@ -31,14 +31,25 @@ function Restore-Bucket ($Bucket) {
     if ($global:LoadedBucketName -ne $Bucket) {
         $letter = $Bucket.Substring(0, 1)
         if (Compare-Numeric $letter) {
-            $letter     = "#"
+            $letter = "#"
         }
-        $fileName   = "scoop-emulators-master/bucket/$letter/$Bucket.json"
-        $data       = Get-Content $fileName | ConvertFrom-Json -AsHashtable
+        $fileName = "scoop-emulators-master/bucket/$letter/$Bucket.json"
+        $data = Get-Content $fileName | ConvertFrom-Json -AsHashtable
+        if ($data.ContainsKey("##")) {
+            foreach ($row in $data["##"]) {
+                if ($row -match '^(.*?):(.*)$') {
+                    $field = $matches[1].Trim()
+                    $value = $matches[2].Trim()
+                    $data[$field] = $value
+                }
+            }
+            $data.Remove("##") # Remove the ## element from the hashtable
+        }        
         $global:LoadedBucketData = $data
         $global:LoadedBucketName = $Bucket
         $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
     }
+    return $global:LoadedBucketData
 }
 
 function Get-Bucket-Field($field = 'bin', $lastOnly = $false) {
@@ -111,13 +122,14 @@ function Find-Bucket-Matches {
     Write-Output "Found $global:totalBins Bins and $($bins.Count) Unique Bins to search for"
     $regexPattern = '(' + [string]::Join('|', ($global:regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
     $global:regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexPattern) -Pattern $regexPattern -AllMatches | Select-Object -ExpandProperty Matches
+    return $global:regexMatches
 }
 
 
 function Find-Emu-Matches {
     $out = @{
         'paths' = @()
-        'emus' = @()
+        'emus'  = @()
     }
     $fileEmus = @{}
     $global:regexMatches | ForEach-Object {
@@ -126,7 +138,8 @@ function Find-Emu-Matches {
         $bin = $regexMatch.Groups[1].Value.ToLower()
         if (-not $global:bin2bucket.ContainsKey($bin)) {
             Write-Output "Cant find $bin in: $($global:bin2bucket.Keys -join ', ')"
-        } else {
+        }
+        else {
             $dirName = Split-Path $fileName -Parent
             $fileEmus[$dirName] = $global:bin2bucket[$bin]
             $out.paths[$dirName] = $fileEmus[$dirName]

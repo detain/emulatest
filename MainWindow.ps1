@@ -5,7 +5,7 @@
 #  Author  :
 #  Date    : 4/18/2023
 #
- #  Generated with ConvertForm module version 2.0.0
+#  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
 #
 #  Invocation Line   : Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" `
@@ -13,10 +13,10 @@
 #  Source            : E:\dev\emulatest-windows-form\MainWindow.Designer.cs
 ################################################################################
 
-function Get-ScriptDirectory
-{ #Return the directory name of this script
-  $Invocation = (Get-Variable MyInvocation -Scope 1).Value
-  Split-Path $Invocation.MyCommand.Path
+function Get-ScriptDirectory {
+ #Return the directory name of this script
+	$Invocation = (Get-Variable MyInvocation -Scope 1).Value
+	Split-Path $Invocation.MyCommand.Path
 }
 
 $ScriptPath = Get-ScriptDirectory
@@ -329,11 +329,11 @@ $EmulatorsGroup.Text = "Discovered Emulators"
 #
 $EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
 $EmulatorsTable.Columns.AddRange(
-$Select,
-$Path,
-$Emulator,
-$CurrentVersion,
-$NewVersion)
+	$Select,
+	$Path,
+	$Emulator,
+	$CurrentVersion,
+	$NewVersion)
 $EmulatorsTable.Location = New-Object System.Drawing.Point(6, 19)
 $EmulatorsTable.Name = "EmulatorsTable"
 $EmulatorsTable.ReadOnly = $true
@@ -389,7 +389,7 @@ $MainWindow.Text = "Emulatest"
 . (".\scoop_finder.ps1")
 . (".\Functions.ps1")
 
-function OnFormClosing_MainWindow{ 
+function OnFormClosing_MainWindow { 
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
@@ -397,13 +397,13 @@ function OnFormClosing_MainWindow{
 	#   if (($_).CloseReason -eq [System.Windows.Forms.CloseReason]::UserClosing)
 
 	#Sets the value indicating that the event should be canceled.
-	($_).Cancel= $False
+	($_).Cancel = $False
 }
 
-$MainWindow.Add_FormClosing( { OnFormClosing_MainWindow} )
+$MainWindow.Add_FormClosing( { OnFormClosing_MainWindow } )
 
-$MainWindow.Add_Shown({$MainWindow.Activate()})
-$ModalResult=$MainWindow.ShowDialog()
+$MainWindow.Add_Shown({ $MainWindow.Activate() })
+$ModalResult = $MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()
 
