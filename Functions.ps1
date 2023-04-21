@@ -14,12 +14,19 @@ $ScanPathButton.Add_Click({
             $LogText.AppendText("Got Item " + $item + [Environment]::NewLine)
             Write-Host $item
         }
+        $LogText.AppendText("Scanning Paths for emulators..." + [Environment]::NewLine)
+        Find-Bucket-Matches -Paths $PathsList.Items -FileNames $global:regexes
+        $LogText.AppendText("Finished scan..." + [Environment]::NewLine)
         $EmulatorsTable.Rows.Clear()
-        # PowerShell script code to scan paths for emulators and get their current and new versions
-        # You can use $EmulatorsTable.Rows.Add to add rows to the table
-        # Example code to add a row to the table:
-        $EmulatorsTable.Rows.Add($false, "C:\Emulators\SNES", "snes9x", "1.60", "1.61")
-        $EmulatorsTable.Rows.Add($false, "C:\Emulators\cemu", "cemu", "1.0", "1.1")
+        Find-Emu-Matches
+        foreach ($path in $global:pathMatches.Keys) {
+            foreach ($bin in $global:pathMatches[$path]) {
+                $bucket = $global:bin2bucket[$bin]
+                $newVersion = 'new'
+                $oldVersion = 'old'
+                $EmulatorsTable.Rows.Add($false, $path, $bucket, $oldVersion, $newVersion)
+            }
+        }
     })
 $UpdateButton.Add_Click({
         $LogText.AppendText("Starting update selected emulators..." + [Environment]::NewLine)
@@ -36,6 +43,7 @@ $MainWindow.Add_Shown({
         Expand-Repo
         $LogText.AppendText("Loading data files..." + [Environment]::NewLine);
         Get-BucketCollection
+        Read-BucketCollection
         $BucketsLoadedText.Text = $global:bucketNames.Count
         # also set this
         #$EmulatorsCountText

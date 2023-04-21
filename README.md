@@ -17,10 +17,12 @@ PowerShell script using Windows.Forms for UI elements.
 * [x] Load emulator data
 * [x] Get Directories from UI/User
 * [x] Render emulators in UI
-* [ ] Scan Dirs for Matches
-* [ ] Get Bins
-* [ ] Display Matches
+* [x] Scan Dirs for Matches
+* [x] Get Bins
+* [x] Display Matches
 * [ ] Upgrade Emulators
+* [ ] Auto-Resize Elements to match window size
+* [ ] progress bar/status while scanning
 * [ ] Auto Update
 * [ ] GitHub Action setup
 * [ ] Documentation

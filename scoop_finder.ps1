@@ -1,3 +1,4 @@
+$global:pathMatches = @{}
 $global:bucketNames = @()
 $global:LoadedBucketData = @{}
 $global:LoadedBucketName = ''
@@ -139,28 +140,19 @@ function Find-Bucket-Matches {
 }
 
 function Find-Emu-Matches {
-    $out = @{
-        'paths' = @()
-        'emus'  = @()
-    }
     foreach ($fullPath in $global:regexMatches) {
         #Write-Output "Got: $fullPath"
         foreach ($bin in $global:bin2bucket.Keys) {
             if ($fullPath.EndsWith($bin)) {
                 $dirName = Split-Path $fullPath -Parent
-                $buckets = $global:bin2bucket[$bin]
-                $out.paths += @{ $dirName = $bin }
-                foreach ($bucket in $buckets) {
-                    #Write-Output "  is bucket {$bucket}"
-                    if (-not $out.emus.ContainsKey($bucket)) {
-                        $out.emus += @{ $bucket = $global:allBuckets[$bucket] }
-                    }
+                if (-not $global:pathMatches.ContainsKey($dirName)) {
+                    $global:pathMatches[$dirName] = @()
                 }
-                break
+                $global:pathMatches[$dirName] += $bin
             }
         }
     }
-    return $out
+    return $global:pathMatches;
 }
 
 #Expand-Repo
