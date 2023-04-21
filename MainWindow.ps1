@@ -3,9 +3,9 @@
 #  Name    : E:\dev\emulatest\MainWindow.ps1  
 #  Version : 0.1
 #  Author  :
-#  Date    : 4/18/2023
+#  Date    : 4/21/2023
 #
-#  Generated with ConvertForm module version 2.0.0
+ #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
 #
 #  Invocation Line   : Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" `
@@ -13,10 +13,10 @@
 #  Source            : E:\dev\emulatest-windows-form\MainWindow.Designer.cs
 ################################################################################
 
-function Get-ScriptDirectory {
- #Return the directory name of this script
-	$Invocation = (Get-Variable MyInvocation -Scope 1).Value
-	Split-Path $Invocation.MyCommand.Path
+function Get-ScriptDirectory
+{ #Return the directory name of this script
+  $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+  Split-Path $Invocation.MyCommand.Path
 }
 
 $ScriptPath = Get-ScriptDirectory
@@ -36,9 +36,9 @@ $PathsList = New-Object System.Windows.Forms.ListBox
 $LogGroup = New-Object System.Windows.Forms.GroupBox
 $LogText = New-Object System.Windows.Forms.RichTextBox
 $BucketsGroup = New-Object System.Windows.Forms.GroupBox
+$BucketDescriptionText = New-Object System.Windows.Forms.TextBox
 $BucketLogoLabel = New-Object System.Windows.Forms.Label
 $BucketLogoImage = New-Object System.Windows.Forms.PictureBox
-$BucketDescriptionText = New-Object System.Windows.Forms.Label
 $BucketDescriptionLabel = New-Object System.Windows.Forms.Label
 $BucketVersionText = New-Object System.Windows.Forms.Label
 $BucketVersionLabel = New-Object System.Windows.Forms.Label
@@ -124,7 +124,7 @@ $PathsList.TabIndex = 0
 $LogGroup.Controls.Add($LogText)
 $LogGroup.Location = New-Object System.Drawing.Point(12, 12)
 $LogGroup.Name = "LogGroup"
-$LogGroup.Size = New-Object System.Drawing.Size(286, 143)
+$LogGroup.Size = New-Object System.Drawing.Size(293, 236)
 $LogGroup.TabIndex = 2
 $LogGroup.TabStop = $false
 $LogGroup.Text = "Log"
@@ -134,15 +134,15 @@ $LogGroup.Text = "Log"
 $LogText.Location = New-Object System.Drawing.Point(6, 19)
 $LogText.Name = "LogText"
 $LogText.ReadOnly = $true
-$LogText.Size = New-Object System.Drawing.Size(274, 118)
+$LogText.Size = New-Object System.Drawing.Size(280, 211)
 $LogText.TabIndex = 0
 $LogText.Text = ""
 #
 # BucketsGroup
 #
+$BucketsGroup.Controls.Add($BucketDescriptionText)
 $BucketsGroup.Controls.Add($BucketLogoLabel)
 $BucketsGroup.Controls.Add($BucketLogoImage)
-$BucketsGroup.Controls.Add($BucketDescriptionText)
 $BucketsGroup.Controls.Add($BucketDescriptionLabel)
 $BucketsGroup.Controls.Add($BucketVersionText)
 $BucketsGroup.Controls.Add($BucketVersionLabel)
@@ -164,6 +164,15 @@ $BucketsGroup.TabIndex = 3
 $BucketsGroup.TabStop = $false
 $BucketsGroup.Text = "Emulators Database"
 #
+# BucketDescriptionText
+#
+$BucketDescriptionText.Location = New-Object System.Drawing.Point(155, 140)
+$BucketDescriptionText.Multiline = $true
+$BucketDescriptionText.Name = "BucketDescriptionText"
+$BucketDescriptionText.ReadOnly = $true
+$BucketDescriptionText.Size = New-Object System.Drawing.Size(200, 64)
+$BucketDescriptionText.TabIndex = 17
+#
 # BucketLogoLabel
 #
 $BucketLogoLabel.AutoSize = $true
@@ -181,19 +190,10 @@ $BucketLogoImage.Size = New-Object System.Drawing.Size(185, 122)
 $BucketLogoImage.TabIndex = 15
 $BucketLogoImage.TabStop = $false
 #
-# BucketDescriptionText
-#
-$BucketDescriptionText.AutoSize = $true
-$BucketDescriptionText.Location = New-Object System.Drawing.Point(404, 19)
-$BucketDescriptionText.Name = "BucketDescriptionText"
-$BucketDescriptionText.Size = New-Object System.Drawing.Size(10, 13)
-$BucketDescriptionText.TabIndex = 14
-$BucketDescriptionText.Text = "-"
-#
 # BucketDescriptionLabel
 #
 $BucketDescriptionLabel.AutoSize = $true
-$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(336, 19)
+$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(156, 124)
 $BucketDescriptionLabel.Name = "BucketDescriptionLabel"
 $BucketDescriptionLabel.Size = New-Object System.Drawing.Size(60, 13)
 $BucketDescriptionLabel.TabIndex = 13
@@ -204,9 +204,8 @@ $BucketDescriptionLabel.Text = "Description"
 $BucketVersionText.AutoSize = $true
 $BucketVersionText.Location = New-Object System.Drawing.Point(224, 104)
 $BucketVersionText.Name = "BucketVersionText"
-$BucketVersionText.Size = New-Object System.Drawing.Size(10, 13)
+$BucketVersionText.Size = New-Object System.Drawing.Size(0, 13)
 $BucketVersionText.TabIndex = 12
-$BucketVersionText.Text = "-"
 #
 # BucketVersionLabel
 #
@@ -220,34 +219,32 @@ $BucketVersionLabel.Text = "Version"
 # BucketsLoadedText
 #
 $BucketsLoadedText.AutoSize = $true
-$BucketsLoadedText.Location = New-Object System.Drawing.Point(290, 184)
+$BucketsLoadedText.Location = New-Object System.Drawing.Point(372, 44)
 $BucketsLoadedText.Name = "BucketsLoadedText"
-$BucketsLoadedText.Size = New-Object System.Drawing.Size(10, 13)
+$BucketsLoadedText.Size = New-Object System.Drawing.Size(0, 13)
 $BucketsLoadedText.TabIndex = 10
-$BucketsLoadedText.Text = "-"
 #
 # BucketsLoadedLabel
 #
 $BucketsLoadedLabel.AutoSize = $true
-$BucketsLoadedLabel.Location = New-Object System.Drawing.Point(155, 184)
+$BucketsLoadedLabel.Location = New-Object System.Drawing.Point(313, 44)
 $BucketsLoadedLabel.Name = "BucketsLoadedLabel"
-$BucketsLoadedLabel.Size = New-Object System.Drawing.Size(129, 13)
+$BucketsLoadedLabel.Size = New-Object System.Drawing.Size(56, 13)
 $BucketsLoadedLabel.TabIndex = 9
-$BucketsLoadedLabel.Text = "Emulator Buckets Loaded"
+$BucketsLoadedLabel.Text = "# Buckets"
 #
 # EmulatorsCountText
 #
 $EmulatorsCountText.AutoSize = $true
-$EmulatorsCountText.Location = New-Object System.Drawing.Point(226, 162)
+$EmulatorsCountText.Location = New-Object System.Drawing.Point(372, 22)
 $EmulatorsCountText.Name = "EmulatorsCountText"
-$EmulatorsCountText.Size = New-Object System.Drawing.Size(10, 13)
+$EmulatorsCountText.Size = New-Object System.Drawing.Size(0, 13)
 $EmulatorsCountText.TabIndex = 8
-$EmulatorsCountText.Text = "-"
 #
 # EmulatorsCountLabel
 #
 $EmulatorsCountLabel.AutoSize = $true
-$EmulatorsCountLabel.Location = New-Object System.Drawing.Point(156, 162)
+$EmulatorsCountLabel.Location = New-Object System.Drawing.Point(306, 22)
 $EmulatorsCountLabel.Name = "EmulatorsCountLabel"
 $EmulatorsCountLabel.Size = New-Object System.Drawing.Size(63, 13)
 $EmulatorsCountLabel.TabIndex = 7
@@ -258,9 +255,8 @@ $EmulatorsCountLabel.Text = "# Emulators"
 $BucketHomeText.AutoSize = $true
 $BucketHomeText.Location = New-Object System.Drawing.Point(224, 75)
 $BucketHomeText.Name = "BucketHomeText"
-$BucketHomeText.Size = New-Object System.Drawing.Size(10, 13)
+$BucketHomeText.Size = New-Object System.Drawing.Size(0, 13)
 $BucketHomeText.TabIndex = 6
-$BucketHomeText.Text = "-"
 #
 # BucketHomeLabel
 #
@@ -276,9 +272,8 @@ $BucketHomeLabel.Text = "Home Page"
 $BucketLicenseText.AutoSize = $true
 $BucketLicenseText.Location = New-Object System.Drawing.Point(224, 48)
 $BucketLicenseText.Name = "BucketLicenseText"
-$BucketLicenseText.Size = New-Object System.Drawing.Size(10, 13)
+$BucketLicenseText.Size = New-Object System.Drawing.Size(0, 13)
 $BucketLicenseText.TabIndex = 4
-$BucketLicenseText.Text = "-"
 #
 # BucketLicenseLabel
 #
@@ -294,9 +289,8 @@ $BucketLicenseLabel.Text = "License"
 $BucketNameText.AutoSize = $true
 $BucketNameText.Location = New-Object System.Drawing.Point(224, 19)
 $BucketNameText.Name = "BucketNameText"
-$BucketNameText.Size = New-Object System.Drawing.Size(10, 13)
+$BucketNameText.Size = New-Object System.Drawing.Size(0, 13)
 $BucketNameText.TabIndex = 2
-$BucketNameText.Text = "-"
 #
 # BucketNameLabel
 #
@@ -329,11 +323,11 @@ $EmulatorsGroup.Text = "Discovered Emulators"
 #
 $EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
 $EmulatorsTable.Columns.AddRange(
-	$Select,
-	$Path,
-	$Emulator,
-	$CurrentVersion,
-	$NewVersion)
+$Select,
+$Path,
+$Emulator,
+$CurrentVersion,
+$NewVersion)
 $EmulatorsTable.Location = New-Object System.Drawing.Point(6, 19)
 $EmulatorsTable.Name = "EmulatorsTable"
 $EmulatorsTable.ReadOnly = $true
@@ -389,7 +383,7 @@ $MainWindow.Text = "Emulatest"
 . (".\scoop_finder.ps1")
 . (".\Functions.ps1")
 
-function OnFormClosing_MainWindow { 
+function OnFormClosing_MainWindow{ 
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
@@ -397,13 +391,13 @@ function OnFormClosing_MainWindow {
 	#   if (($_).CloseReason -eq [System.Windows.Forms.CloseReason]::UserClosing)
 
 	#Sets the value indicating that the event should be canceled.
-	($_).Cancel = $False
+	($_).Cancel= $False
 }
 
-$MainWindow.Add_FormClosing( { OnFormClosing_MainWindow } )
+$MainWindow.Add_FormClosing( { OnFormClosing_MainWindow} )
 
-$MainWindow.Add_Shown({ $MainWindow.Activate() })
-$ModalResult = $MainWindow.ShowDialog()
+$MainWindow.Add_Shown({$MainWindow.Activate()})
+$ModalResult=$MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()
 

@@ -44,7 +44,7 @@ function Restore-Bucket ($Bucket) {
                 }
             }
             $data.Remove("##") # Remove the ## element from the hashtable
-        }        
+        }
         $global:LoadedBucketData = $data
         $global:LoadedBucketName = $Bucket
         $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
@@ -101,51 +101,62 @@ function Read-BucketCollection {
         }
         $bins | ForEach-Object {
             $bin = $_
-            $global:totalBins++
-            $bin = $bin.ToLower().Replace('\', '/')
-            $regex = [regex]::Escape($bin)
-            if (-not $global:regexes.Contains($regex)) {
-                $global:regexes += $regex
+            if ($bin -ne '') {
+                $global:totalBins++
+                #$bin = $bin.ToLower().Replace('\', '/')
+                #$regex = [regex]::Escape($bin)
+                $regex = $bin;
+                if (-not $global:regexes.Contains($regex)) {
+                    $global:regexes += $regex
+                }
+                if (-not $global:bin2bucket.ContainsKey($bin)) {
+                    $global:bin2bucket[$bin] = @()
+                }
+                $global:bin2bucket[$bin] += $bucket
             }
-            if (-not $global:bin2bucket.ContainsKey($bin)) {
-                $global:bin2bucket[$bin] = @()
-            }
-            $global:bin2bucket[$bin] += $bucket
         }
-        Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), ($urls), ($extractDir))
+        #Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
     }
 }
 
 function Find-Bucket-Matches {
-    #$searchDir = $args[0]
-    $searchDir = "F:\Consoles\RetroBat"
-    Write-Output "Found $global:totalBins Bins and $($bins.Count) Unique Bins to search for"
-    $regexPattern = '(' + [string]::Join('|', ($global:regexes | ForEach-Object { [regex]::Escape($_) })) + ')'
-    $global:regexMatches = Select-String -Path (Get-ChildItem -Path $searchDir -Recurse -Include $regexPattern) -Pattern $regexPattern -AllMatches | Select-Object -ExpandProperty Matches
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string[]]$Paths,
+        
+        [Parameter(Mandatory=$true)]
+        [string[]]$FileNames
+    )    
+    $global:regexMatches = Get-ChildItem -Path $Paths -Recurse -Include $FileNames -File | Select-Object -ExpandProperty FullName
+    #$global:regexMatches = @()    
+    #foreach ($path in $Paths) {
+    #    if (Test-Path -Path $path -PathType Container) {
+    #        $global:regexMatches += Get-ChildItem -Path $Paths -Recurse -Include $FileNames -File | Select-Object -ExpandProperty FullName
+    #    }
+    #}    
     return $global:regexMatches
 }
-
 
 function Find-Emu-Matches {
     $out = @{
         'paths' = @()
         'emus'  = @()
     }
-    $fileEmus = @{}
-    $global:regexMatches | ForEach-Object {
-        $regexMatch = $_
-        $fileName = $regexMatch.Value
-        $bin = $regexMatch.Groups[1].Value.ToLower()
-        if (-not $global:bin2bucket.ContainsKey($bin)) {
-            Write-Output "Cant find $bin in: $($global:bin2bucket.Keys -join ', ')"
-        }
-        else {
-            $dirName = Split-Path $fileName -Parent
-            $fileEmus[$dirName] = $global:bin2bucket[$bin]
-            $out.paths[$dirName] = $fileEmus[$dirName]
-            $global:bin2bucket[$bin] | ForEach-Object {
-                $emu = $_
-                $out.emus[$emu] = $global:allBuckets[$emu]
+    foreach ($fullPath in $global:regexMatches) {
+        #Write-Output "Got: $fullPath"
+        foreach ($bin in $global:bin2bucket.Keys) {
+            if ($fullPath.EndsWith($bin)) {
+                $dirName = Split-Path $fullPath -Parent
+                $buckets = $global:bin2bucket[$bin]
+                $out.paths += @{ $dirName = $bin }
+                foreach ($bucket in $buckets) {
+                    #Write-Output "  is bucket {$bucket}"
+                    if (-not $out.emus.ContainsKey($bucket)) {
+                        $out.emus += @{ $bucket = $global:allBuckets[$bucket] }
+                    }
+                }
+                break
             }
         }
     }

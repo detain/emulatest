@@ -1,4 +1,3 @@
-
 # Add event handlers to the add and remove buttons to modify the list of directories:
 $AddPathButton.Add_Click({
         $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -28,11 +27,10 @@ $UpdateButton.Add_Click({
         # You can use $logBox.AppendText to add messages to the log box
         $LogText.AppendText("Finished update selected emulators." + [Environment]::NewLine)
     })
-$LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
 
 $MainWindow.Add_Shown({
         $MainWindow.Activate()
-	
+        $LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
         Write-Host "MainWindow Activated"
         $LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
         Expand-Repo
@@ -44,7 +42,6 @@ $MainWindow.Add_Shown({
         $LogText.AppendText("Adding to list..." + [Environment]::NewLine)
         $BucketsList.Items.AddRange($global:bucketNames);
         $LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
-	
     })
 
 function BucketSelected($listObj, $listArgs) {
