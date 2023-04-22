@@ -12,7 +12,7 @@ $RemovePathButton.Add_Click({
 $ScanPathButton.Add_Click({
         foreach ($item in $PathsList.Items) {
             $LogText.AppendText("Got Item " + $item + [Environment]::NewLine)
-            Write-Host $item
+            Write-Output $item
         }
         $LogText.AppendText("Scanning Paths for emulators..." + [Environment]::NewLine)
         Find-Bucket-Matches -Paths $PathsList.Items -FileNames $global:regexes
@@ -38,7 +38,7 @@ $UpdateButton.Add_Click({
 $MainWindow.Add_Shown({
         $MainWindow.Activate()
         $LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
-        Write-Host "MainWindow Activated"
+        Write-Output "MainWindow Activated"
         $LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
         Expand-Repo
         $LogText.AppendText("Loading data files..." + [Environment]::NewLine);
@@ -62,7 +62,7 @@ function BucketSelected($listObj, $listArgs) {
     $BucketHomeText.Text = $data.homepage
     $BucketLicenseText.Text = $data.license
     $BucketVersionText.Text = $data.version
-    Write-Host "Selected item: $selectedItem"
+    Write-Output "Selected item: $selectedItem"
 }
 
 # Add the SelectedIndexChanged event handler to the ListBox

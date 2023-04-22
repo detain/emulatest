@@ -15,6 +15,10 @@ function Expand-Repo {
     Remove-Item -Path "master.zip" -Force
 }
 
+function Remove-Repo {
+    Remove-Item -Path scoop-emulators-master -Recurse -Force
+}
+
 function Get-BucketCollection {
     $global:bucketNames = @()
     Get-ChildItem 'scoop-emulators-master/bucket/*/*.json' | ForEach-Object {
@@ -125,17 +129,17 @@ function Find-Bucket-Matches {
     param(
         [Parameter(Mandatory=$true)]
         [string[]]$Paths,
-        
+
         [Parameter(Mandatory=$true)]
         [string[]]$FileNames
-    )    
+    )
     $global:regexMatches = Get-ChildItem -Path $Paths -Recurse -Include $FileNames -File | Select-Object -ExpandProperty FullName
-    #$global:regexMatches = @()    
+    #$global:regexMatches = @()
     #foreach ($path in $Paths) {
     #    if (Test-Path -Path $path -PathType Container) {
     #        $global:regexMatches += Get-ChildItem -Path $Paths -Recurse -Include $FileNames -File | Select-Object -ExpandProperty FullName
     #    }
-    #}    
+    #}
     return $global:regexMatches
 }
 
