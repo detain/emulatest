@@ -21,10 +21,11 @@ $ScanPathButton.Add_Click({
         Find-Emu-Matches
         foreach ($path in $global:pathMatches.Keys) {
             foreach ($bin in $global:pathMatches[$path]) {
-                $bucket = $global:bin2bucket[$bin]
-                $newVersion = 'new'
-                $oldVersion = 'old'
-                $EmulatorsTable.Rows.Add($false, $path, $bucket, $oldVersion, $newVersion)
+                foreach ($bucket in $global:bin2buckets[$bin]) {
+                    $newVersion = 'new'
+                    $oldVersion = 'old'
+                    $EmulatorsTable.Rows.Add($false, $path, $bucket, $oldVersion, $newVersion)
+                }
             }
         }
     })

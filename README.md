@@ -23,12 +23,18 @@ Searches through directories for known emulator executable files, lets you custo
 * [x] Scan Dirs for Matches
 * [x] Get Bins
 * [x] Display Matches
+* [x] remove repo on close
+* [ ] fix database group element distribution/sizing
+* [ ] fix logo display / scaling
+* [ ] add check all button to discovered emulators
+* [ ] fix width on disco emulators sections
+* [ ] add saving/loading discovered/emulators and such
 * [ ] change code around to avoid globals
 * [ ] Ensure all bins are returned
 * [ ] use caching so you dont reaload the data every time you click an emulator
 * [ ] better extractDir handling
 * [ ] Upgrade Emulators
-* [ ] Auto-Resize Elements to match window size
+* [x] Auto-Resize Elements to match window size
 * [ ] progress bar/status while scanning
 * [ ] Auto Update
 * [ ] GitHub Action setup

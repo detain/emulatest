@@ -5,7 +5,7 @@ $global:LoadedBucketName = ''
 $global:LoadedBuckets = @{}
 $global:regexMatches = @{}
 $global:allBuckets = @{}
-$global:bin2bucket = @{}
+$global:bin2buckets = @{}
 $global:regexes = @()
 $global:totalBins = 0
 
@@ -114,10 +114,12 @@ function Read-BucketCollection {
                 if (-not $global:regexes.Contains($regex)) {
                     $global:regexes += $regex
                 }
-                if (-not $global:bin2bucket.ContainsKey($bin)) {
-                    $global:bin2bucket[$bin] = @()
+                if (-not $global:bin2buckets.ContainsKey($bin)) {
+                    $global:bin2buckets[$bin] = @()
                 }
-                $global:bin2bucket[$bin] += $bucket
+                if (-not $global:bin2buckets[$bin].Contains($bucket)) {
+                    $global:bin2buckets[$bin] += $bucket
+                }
             }
         }
         #Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
@@ -146,7 +148,7 @@ function Find-Bucket-Matches {
 function Find-Emu-Matches {
     foreach ($fullPath in $global:regexMatches) {
         #Write-Output "Got: $fullPath"
-        foreach ($bin in $global:bin2bucket.Keys) {
+        foreach ($bin in $global:bin2buckets.Keys) {
             if ($fullPath.EndsWith($bin)) {
                 $dirName = Split-Path $fullPath -Parent
                 if (-not $global:pathMatches.ContainsKey($dirName)) {
