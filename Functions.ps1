@@ -144,7 +144,7 @@ function BucketSelected($listObj, $listArgs) {
     $data = Restore-Bucket($bucket)
     $BucketNameText.Text = $data.name
     #ScaleBucketLogo($data.logo)
-    BucketLogoImage.Load($data.logo)
+    $BucketLogoImage.Load($data.logo)
     $BucketDescriptionText.Text = $data.description
     $BucketHomeText.Text = $data.homepage
     $BucketLicenseText.Text = $data.license

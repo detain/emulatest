@@ -1,9 +1,9 @@
-################################################################################
+################################################################################ 
 #
-#  Name    : E:\dev\emulatest\MainWindow.ps1
+#  Name    : E:\dev\emulatest\MainWindow.ps1  
 #  Version : 0.1
 #  Author  :
-#  Date    : 4/25/2023
+#  Date    : 4/27/2023
 #
  #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
@@ -40,32 +40,32 @@ $AddPathButton = New-Object System.Windows.Forms.Button
 $PathsList = New-Object System.Windows.Forms.ListBox
 $splitContainerRight = New-Object System.Windows.Forms.SplitContainer
 $BucketsGroup = New-Object System.Windows.Forms.GroupBox
+$BucketsTable = New-Object System.Windows.Forms.TableLayoutPanel
 $BucketDescriptionText = New-Object System.Windows.Forms.TextBox
-$BucketLogoLabel = New-Object System.Windows.Forms.Label
 $BucketLogoImage = New-Object System.Windows.Forms.PictureBox
-$BucketDescriptionLabel = New-Object System.Windows.Forms.Label
-$BucketVersionText = New-Object System.Windows.Forms.Label
-$BucketVersionLabel = New-Object System.Windows.Forms.Label
-$BucketsLoadedText = New-Object System.Windows.Forms.Label
+$BucketsList = New-Object System.Windows.Forms.ListBox
 $BucketsLoadedLabel = New-Object System.Windows.Forms.Label
-$EmulatorsCountText = New-Object System.Windows.Forms.Label
+$BucketLogoLabel = New-Object System.Windows.Forms.Label
+$BucketsLoadedText = New-Object System.Windows.Forms.Label
 $EmulatorsCountLabel = New-Object System.Windows.Forms.Label
-$BucketHomeText = New-Object System.Windows.Forms.Label
-$BucketHomeLabel = New-Object System.Windows.Forms.Label
-$BucketLicenseText = New-Object System.Windows.Forms.Label
-$BucketLicenseLabel = New-Object System.Windows.Forms.Label
-$BucketNameText = New-Object System.Windows.Forms.Label
+$BucketDescriptionLabel = New-Object System.Windows.Forms.Label
+$EmulatorsCountText = New-Object System.Windows.Forms.Label
 $BucketNameLabel = New-Object System.Windows.Forms.Label
+$BucketLicenseLabel = New-Object System.Windows.Forms.Label
+$BucketHomeLabel = New-Object System.Windows.Forms.Label
+$BucketVersionLabel = New-Object System.Windows.Forms.Label
+$BucketVersionText = New-Object System.Windows.Forms.Label
+$BucketHomeText = New-Object System.Windows.Forms.Label
+$BucketLicenseText = New-Object System.Windows.Forms.Label
+$BucketNameText = New-Object System.Windows.Forms.Label
 $EmulatorsGroup = New-Object System.Windows.Forms.GroupBox
 $EmulatorsTable = New-Object System.Windows.Forms.DataGridView
 $contextMenuStrip1 = New-Object System.Windows.Forms.ContextMenuStrip($components)
-$BucketsTable = New-Object System.Windows.Forms.TableLayoutPanel
-$BucketsList = New-Object System.Windows.Forms.ListBox
-$NewVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
-$CurrentVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
-$Emulator = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
-$Path = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $Select = New-Object System.Windows.Forms.DataGridViewCheckBoxColumn
+$Path = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
+$Emulator = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
+$CurrentVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
+$NewVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 #
 # splitContainerMain
 #
@@ -219,188 +219,6 @@ $BucketsGroup.TabIndex = 4
 $BucketsGroup.TabStop = $false
 $BucketsGroup.Text = "Emulators Database"
 #
-# BucketDescriptionText
-#
-$BucketDescriptionText.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketDescriptionText.Location = New-Object System.Drawing.Point(529, 3)
-$BucketDescriptionText.Multiline = $true
-$BucketDescriptionText.Name = "BucketDescriptionText"
-$BucketDescriptionText.ReadOnly = $true
-$BucketsTable.SetRowSpan($BucketDescriptionText, 3)
-$BucketDescriptionText.Size = New-Object System.Drawing.Size(176, 111)
-$BucketDescriptionText.TabIndex = 17
-#
-# BucketLogoLabel
-#
-$BucketLogoLabel.AutoSize = $true
-$BucketLogoLabel.Location = New-Object System.Drawing.Point(429, 117)
-$BucketLogoLabel.Name = "BucketLogoLabel"
-$BucketLogoLabel.Size = New-Object System.Drawing.Size(31, 13)
-$BucketLogoLabel.TabIndex = 16
-$BucketLogoLabel.Text = "Logo"
-#
-# BucketLogoImage
-#
-$BucketLogoImage.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketLogoImage.Location = New-Object System.Drawing.Point(529, 120)
-$BucketLogoImage.Name = "BucketLogoImage"
-$BucketsTable.SetRowSpan($BucketLogoImage, 3)
-$BucketLogoImage.Size = New-Object System.Drawing.Size(176, 111)
-$BucketLogoImage.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::AutoSize
-$BucketLogoImage.TabIndex = 15
-$BucketLogoImage.TabStop = $false
-#
-# BucketDescriptionLabel
-#
-$BucketDescriptionLabel.AutoSize = $true
-$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(429, 0)
-$BucketDescriptionLabel.Name = "BucketDescriptionLabel"
-$BucketDescriptionLabel.Size = New-Object System.Drawing.Size(60, 13)
-$BucketDescriptionLabel.TabIndex = 13
-$BucketDescriptionLabel.Text = "Description"
-#
-# BucketVersionText
-#
-$BucketVersionText.AutoSize = $true
-$BucketVersionText.Location = New-Object System.Drawing.Point(248, 117)
-$BucketVersionText.Name = "BucketVersionText"
-$BucketVersionText.Size = New-Object System.Drawing.Size(13, 13)
-$BucketVersionText.TabIndex = 12
-$BucketVersionText.Text = "v"
-#
-# BucketVersionLabel
-#
-$BucketVersionLabel.AutoSize = $true
-$BucketVersionLabel.Location = New-Object System.Drawing.Point(148, 117)
-$BucketVersionLabel.Name = "BucketVersionLabel"
-$BucketVersionLabel.Size = New-Object System.Drawing.Size(42, 13)
-$BucketVersionLabel.TabIndex = 11
-$BucketVersionLabel.Text = "Version"
-#
-# BucketsLoadedText
-#
-$BucketsLoadedText.AutoSize = $true
-$BucketsLoadedText.Location = New-Object System.Drawing.Point(248, 195)
-$BucketsLoadedText.Name = "BucketsLoadedText"
-$BucketsLoadedText.Size = New-Object System.Drawing.Size(13, 13)
-$BucketsLoadedText.TabIndex = 10
-$BucketsLoadedText.Text = "0"
-#
-# BucketsLoadedLabel
-#
-$BucketsLoadedLabel.AutoSize = $true
-$BucketsLoadedLabel.Location = New-Object System.Drawing.Point(148, 195)
-$BucketsLoadedLabel.Name = "BucketsLoadedLabel"
-$BucketsLoadedLabel.Size = New-Object System.Drawing.Size(56, 13)
-$BucketsLoadedLabel.TabIndex = 9
-$BucketsLoadedLabel.Text = "# Buckets"
-#
-# EmulatorsCountText
-#
-$EmulatorsCountText.AutoSize = $true
-$EmulatorsCountText.Location = New-Object System.Drawing.Point(248, 156)
-$EmulatorsCountText.Name = "EmulatorsCountText"
-$EmulatorsCountText.Size = New-Object System.Drawing.Size(13, 13)
-$EmulatorsCountText.TabIndex = 8
-$EmulatorsCountText.Text = "0"
-#
-# EmulatorsCountLabel
-#
-$EmulatorsCountLabel.AutoSize = $true
-$EmulatorsCountLabel.Location = New-Object System.Drawing.Point(148, 156)
-$EmulatorsCountLabel.Name = "EmulatorsCountLabel"
-$EmulatorsCountLabel.Size = New-Object System.Drawing.Size(63, 13)
-$EmulatorsCountLabel.TabIndex = 7
-$EmulatorsCountLabel.Text = "# Emulators"
-#
-# BucketHomeText
-#
-$BucketHomeText.AutoSize = $true
-$BucketHomeText.Location = New-Object System.Drawing.Point(248, 78)
-$BucketHomeText.Name = "BucketHomeText"
-$BucketHomeText.Size = New-Object System.Drawing.Size(38, 13)
-$BucketHomeText.TabIndex = 6
-$BucketHomeText.Text = "http://"
-#
-# BucketHomeLabel
-#
-$BucketHomeLabel.AutoSize = $true
-$BucketHomeLabel.Location = New-Object System.Drawing.Point(148, 78)
-$BucketHomeLabel.Name = "BucketHomeLabel"
-$BucketHomeLabel.Size = New-Object System.Drawing.Size(63, 13)
-$BucketHomeLabel.TabIndex = 5
-$BucketHomeLabel.Text = "Home Page"
-#
-# BucketLicenseText
-#
-$BucketLicenseText.AutoSize = $true
-$BucketLicenseText.Location = New-Object System.Drawing.Point(248, 39)
-$BucketLicenseText.Name = "BucketLicenseText"
-$BucketLicenseText.Size = New-Object System.Drawing.Size(53, 13)
-$BucketLicenseText.TabIndex = 4
-$BucketLicenseText.Text = "Unknown"
-#
-# BucketLicenseLabel
-#
-$BucketLicenseLabel.AutoSize = $true
-$BucketLicenseLabel.Location = New-Object System.Drawing.Point(148, 39)
-$BucketLicenseLabel.Name = "BucketLicenseLabel"
-$BucketLicenseLabel.Size = New-Object System.Drawing.Size(44, 13)
-$BucketLicenseLabel.TabIndex = 3
-$BucketLicenseLabel.Text = "License"
-#
-# BucketNameText
-#
-$BucketNameText.AutoSize = $true
-$BucketNameText.Location = New-Object System.Drawing.Point(248, 0)
-$BucketNameText.Name = "BucketNameText"
-$BucketNameText.Size = New-Object System.Drawing.Size(74, 13)
-$BucketNameText.TabIndex = 2
-$BucketNameText.Text = "none selected"
-#
-# BucketNameLabel
-#
-$BucketNameLabel.AutoSize = $true
-$BucketNameLabel.Location = New-Object System.Drawing.Point(148, 0)
-$BucketNameLabel.Name = "BucketNameLabel"
-$BucketNameLabel.Size = New-Object System.Drawing.Size(35, 13)
-$BucketNameLabel.TabIndex = 1
-$BucketNameLabel.Text = "Name"
-#
-# EmulatorsGroup
-#
-$EmulatorsGroup.AutoSizeMode = [System.Windows.Forms.AutoSizeMode]::GrowAndShrink
-$EmulatorsGroup.Controls.Add($EmulatorsTable)
-$EmulatorsGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
-$EmulatorsGroup.Location = New-Object System.Drawing.Point(0, 0)
-$EmulatorsGroup.Name = "EmulatorsGroup"
-$EmulatorsGroup.Size = New-Object System.Drawing.Size(714, 256)
-$EmulatorsGroup.TabIndex = 5
-$EmulatorsGroup.TabStop = $false
-$EmulatorsGroup.Text = "Discovered Emulators"
-#
-# EmulatorsTable
-#
-$EmulatorsTable.AutoSizeColumnsMode = [System.Windows.Forms.DataGridViewAutoSizeColumnsMode]::Fill
-$EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
-$EmulatorsTable.Columns.AddRange(
-$Select,
-$Path,
-$Emulator,
-$CurrentVersion,
-$NewVersion)
-$EmulatorsTable.Dock = [System.Windows.Forms.DockStyle]::Fill
-$EmulatorsTable.Location = New-Object System.Drawing.Point(3, 16)
-$EmulatorsTable.Name = "EmulatorsTable"
-$EmulatorsTable.ReadOnly = $true
-$EmulatorsTable.Size = New-Object System.Drawing.Size(708, 237)
-$EmulatorsTable.TabIndex = 0
-#
-# contextMenuStrip1
-#
-$contextMenuStrip1.Name = "contextMenuStrip1"
-$contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
-#
 # BucketsTable
 #
 $BucketsTable.ColumnCount = 5
@@ -439,6 +257,28 @@ $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Wi
 $BucketsTable.Size = New-Object System.Drawing.Size(708, 234)
 $BucketsTable.TabIndex = 18
 #
+# BucketDescriptionText
+#
+$BucketDescriptionText.Dock = [System.Windows.Forms.DockStyle]::Fill
+$BucketDescriptionText.Location = New-Object System.Drawing.Point(529, 3)
+$BucketDescriptionText.Multiline = $true
+$BucketDescriptionText.Name = "BucketDescriptionText"
+$BucketDescriptionText.ReadOnly = $true
+$BucketsTable.SetRowSpan($BucketDescriptionText, 3)
+$BucketDescriptionText.Size = New-Object System.Drawing.Size(176, 111)
+$BucketDescriptionText.TabIndex = 17
+#
+# BucketLogoImage
+#
+$BucketLogoImage.Dock = [System.Windows.Forms.DockStyle]::Fill
+$BucketLogoImage.Location = New-Object System.Drawing.Point(529, 120)
+$BucketLogoImage.Name = "BucketLogoImage"
+$BucketsTable.SetRowSpan($BucketLogoImage, 3)
+$BucketLogoImage.Size = New-Object System.Drawing.Size(176, 111)
+$BucketLogoImage.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::AutoSize
+$BucketLogoImage.TabIndex = 15
+$BucketLogoImage.TabStop = $false
+#
 # BucketsList
 #
 $BucketsList.Dock = [System.Windows.Forms.DockStyle]::Fill
@@ -449,36 +289,208 @@ $BucketsTable.SetRowSpan($BucketsList, 6)
 $BucketsList.Size = New-Object System.Drawing.Size(139, 228)
 $BucketsList.TabIndex = 0
 #
-# NewVersion
+# BucketsLoadedLabel
 #
-$NewVersion.HeaderText = "New Version"
-$NewVersion.Name = "NewVersion"
-$NewVersion.ReadOnly = $true
+$BucketsLoadedLabel.AutoSize = $true
+$BucketsLoadedLabel.Location = New-Object System.Drawing.Point(148, 195)
+$BucketsLoadedLabel.Name = "BucketsLoadedLabel"
+$BucketsLoadedLabel.Size = New-Object System.Drawing.Size(56, 13)
+$BucketsLoadedLabel.TabIndex = 9
+$BucketsLoadedLabel.Text = "# Buckets"
 #
-# CurrentVersion
+# BucketLogoLabel
 #
-$CurrentVersion.HeaderText = "Current Version"
-$CurrentVersion.Name = "CurrentVersion"
-$CurrentVersion.ReadOnly = $true
+$BucketLogoLabel.AutoSize = $true
+$BucketLogoLabel.Location = New-Object System.Drawing.Point(429, 117)
+$BucketLogoLabel.Name = "BucketLogoLabel"
+$BucketLogoLabel.Size = New-Object System.Drawing.Size(31, 13)
+$BucketLogoLabel.TabIndex = 16
+$BucketLogoLabel.Text = "Logo"
 #
-# Emulator
+# BucketsLoadedText
 #
-$Emulator.HeaderText = "Emulator"
-$Emulator.Name = "Emulator"
-$Emulator.ReadOnly = $true
+$BucketsLoadedText.AutoSize = $true
+$BucketsLoadedText.Location = New-Object System.Drawing.Point(248, 195)
+$BucketsLoadedText.Name = "BucketsLoadedText"
+$BucketsLoadedText.Size = New-Object System.Drawing.Size(13, 13)
+$BucketsLoadedText.TabIndex = 10
+$BucketsLoadedText.Text = "0"
 #
-# Path
+# EmulatorsCountLabel
 #
-$Path.HeaderText = "Path"
-$Path.Name = "Path"
-$Path.ReadOnly = $true
+$EmulatorsCountLabel.AutoSize = $true
+$EmulatorsCountLabel.Location = New-Object System.Drawing.Point(148, 156)
+$EmulatorsCountLabel.Name = "EmulatorsCountLabel"
+$EmulatorsCountLabel.Size = New-Object System.Drawing.Size(63, 13)
+$EmulatorsCountLabel.TabIndex = 7
+$EmulatorsCountLabel.Text = "# Emulators"
+#
+# BucketDescriptionLabel
+#
+$BucketDescriptionLabel.AutoSize = $true
+$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(429, 0)
+$BucketDescriptionLabel.Name = "BucketDescriptionLabel"
+$BucketDescriptionLabel.Size = New-Object System.Drawing.Size(60, 13)
+$BucketDescriptionLabel.TabIndex = 13
+$BucketDescriptionLabel.Text = "Description"
+#
+# EmulatorsCountText
+#
+$EmulatorsCountText.AutoSize = $true
+$EmulatorsCountText.Location = New-Object System.Drawing.Point(248, 156)
+$EmulatorsCountText.Name = "EmulatorsCountText"
+$EmulatorsCountText.Size = New-Object System.Drawing.Size(13, 13)
+$EmulatorsCountText.TabIndex = 8
+$EmulatorsCountText.Text = "0"
+#
+# BucketNameLabel
+#
+$BucketNameLabel.AutoSize = $true
+$BucketNameLabel.Location = New-Object System.Drawing.Point(148, 0)
+$BucketNameLabel.Name = "BucketNameLabel"
+$BucketNameLabel.Size = New-Object System.Drawing.Size(35, 13)
+$BucketNameLabel.TabIndex = 1
+$BucketNameLabel.Text = "Name"
+#
+# BucketLicenseLabel
+#
+$BucketLicenseLabel.AutoSize = $true
+$BucketLicenseLabel.Location = New-Object System.Drawing.Point(148, 39)
+$BucketLicenseLabel.Name = "BucketLicenseLabel"
+$BucketLicenseLabel.Size = New-Object System.Drawing.Size(44, 13)
+$BucketLicenseLabel.TabIndex = 3
+$BucketLicenseLabel.Text = "License"
+#
+# BucketHomeLabel
+#
+$BucketHomeLabel.AutoSize = $true
+$BucketHomeLabel.Location = New-Object System.Drawing.Point(148, 78)
+$BucketHomeLabel.Name = "BucketHomeLabel"
+$BucketHomeLabel.Size = New-Object System.Drawing.Size(63, 13)
+$BucketHomeLabel.TabIndex = 5
+$BucketHomeLabel.Text = "Home Page"
+#
+# BucketVersionLabel
+#
+$BucketVersionLabel.AutoSize = $true
+$BucketVersionLabel.Location = New-Object System.Drawing.Point(148, 117)
+$BucketVersionLabel.Name = "BucketVersionLabel"
+$BucketVersionLabel.Size = New-Object System.Drawing.Size(42, 13)
+$BucketVersionLabel.TabIndex = 11
+$BucketVersionLabel.Text = "Version"
+#
+# BucketVersionText
+#
+$BucketVersionText.AutoSize = $true
+$BucketVersionText.Location = New-Object System.Drawing.Point(248, 117)
+$BucketVersionText.Name = "BucketVersionText"
+$BucketVersionText.Size = New-Object System.Drawing.Size(13, 13)
+$BucketVersionText.TabIndex = 12
+$BucketVersionText.Text = "v"
+#
+# BucketHomeText
+#
+$BucketHomeText.AutoSize = $true
+$BucketHomeText.Location = New-Object System.Drawing.Point(248, 78)
+$BucketHomeText.Name = "BucketHomeText"
+$BucketHomeText.Size = New-Object System.Drawing.Size(38, 13)
+$BucketHomeText.TabIndex = 6
+$BucketHomeText.Text = "http://"
+#
+# BucketLicenseText
+#
+$BucketLicenseText.AutoSize = $true
+$BucketLicenseText.Location = New-Object System.Drawing.Point(248, 39)
+$BucketLicenseText.Name = "BucketLicenseText"
+$BucketLicenseText.Size = New-Object System.Drawing.Size(53, 13)
+$BucketLicenseText.TabIndex = 4
+$BucketLicenseText.Text = "Unknown"
+#
+# BucketNameText
+#
+$BucketNameText.AutoSize = $true
+$BucketNameText.Location = New-Object System.Drawing.Point(248, 0)
+$BucketNameText.Name = "BucketNameText"
+$BucketNameText.Size = New-Object System.Drawing.Size(74, 13)
+$BucketNameText.TabIndex = 2
+$BucketNameText.Text = "none selected"
+#
+# EmulatorsGroup
+#
+$EmulatorsGroup.AutoSizeMode = [System.Windows.Forms.AutoSizeMode]::GrowAndShrink
+$EmulatorsGroup.Controls.Add($EmulatorsTable)
+$EmulatorsGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
+$EmulatorsGroup.Location = New-Object System.Drawing.Point(0, 0)
+$EmulatorsGroup.Name = "EmulatorsGroup"
+$EmulatorsGroup.Size = New-Object System.Drawing.Size(714, 256)
+$EmulatorsGroup.TabIndex = 5
+$EmulatorsGroup.TabStop = $false
+$EmulatorsGroup.Text = "Discovered Emulators"
+#
+# EmulatorsTable
+#
+$EmulatorsTable.AutoSizeColumnsMode = [System.Windows.Forms.DataGridViewAutoSizeColumnsMode]::Fill
+$EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
+$EmulatorsTable.Columns.AddRange(
+$Select,
+$Path,
+$Emulator,
+$CurrentVersion,
+$NewVersion)
+$EmulatorsTable.Dock = [System.Windows.Forms.DockStyle]::Fill
+$EmulatorsTable.Location = New-Object System.Drawing.Point(3, 16)
+$EmulatorsTable.Name = "EmulatorsTable"
+$EmulatorsTable.Size = New-Object System.Drawing.Size(708, 237)
+$EmulatorsTable.TabIndex = 0
+#
+# contextMenuStrip1
+#
+$contextMenuStrip1.Name = "contextMenuStrip1"
+$contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
 #
 # Select
 #
+$Select.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+$Select.FillWeight = 10
 $Select.HeaderText = ""
 $Select.Name = "Select"
-$Select.ReadOnly = $false
-$Select.Resizable = [System.Windows.Forms.DataGridViewTriState]::False
+$Select.Width = 21
+#
+# Path
+#
+$Path.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+$Path.FillWeight = 40
+$Path.HeaderText = "Path"
+$Path.Name = "Path"
+$Path.ReadOnly = $true
+$Path.Width = 54
+#
+# Emulator
+#
+$Emulator.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+$Emulator.FillWeight = 20
+$Emulator.HeaderText = "Emulator"
+$Emulator.Name = "Emulator"
+$Emulator.ReadOnly = $true
+$Emulator.Width = 73
+#
+# CurrentVersion
+#
+$CurrentVersion.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+$CurrentVersion.FillWeight = 15
+$CurrentVersion.HeaderText = "Current Version"
+$CurrentVersion.Name = "CurrentVersion"
+$CurrentVersion.ReadOnly = $true
+$CurrentVersion.Width = 96
+#
+# NewVersion
+#
+$NewVersion.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+$NewVersion.FillWeight = 15
+$NewVersion.HeaderText = "New Version"
+$NewVersion.Name = "NewVersion"
+$NewVersion.ReadOnly = $true
+$NewVersion.Width = 85
 #
 # MainWindow
 #
@@ -494,7 +506,7 @@ $MainWindow.Text = "EmuLatest"
 . (".\Functions.ps1")
 
 function OnFormClosing_MainWindow{
-	Remove-Repo
+	Remove-Repo 
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
@@ -511,5 +523,4 @@ $MainWindow.Add_Shown({$MainWindow.Activate()})
 $ModalResult=$MainWindow.ShowDialog()
 # Release the Form
 $MainWindow.Dispose()
-
 
