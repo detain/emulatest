@@ -477,7 +477,7 @@ $Path.ReadOnly = $true
 #
 $Select.HeaderText = ""
 $Select.Name = "Select"
-$Select.ReadOnly = $true
+$Select.ReadOnly = $false
 $Select.Resizable = [System.Windows.Forms.DataGridViewTriState]::False
 #
 # MainWindow
@@ -494,6 +494,7 @@ $MainWindow.Text = "EmuLatest"
 . (".\Functions.ps1")
 
 function OnFormClosing_MainWindow{
+	Remove-Repo
 	# $this parameter is equal to the sender (object)
 	# $_ is equal to the parameter e (eventarg)
 
