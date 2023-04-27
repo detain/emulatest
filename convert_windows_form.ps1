@@ -8,5 +8,6 @@ Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" `
   -replace '\$EmulatorsTable\.Columns\.AddRange\(@\((\s*\$Select,\s*\$Path,\s*\$Emulator,\s*\$CurrentVersion,\s*\$NewVersion\s*)\)\)', `
   '$EmulatorsTable.Columns.AddRange($1)' `
   -replace '\.FillWeight = (\d+)F', `
-  '.FillWeight = $1'
+  '.FillWeight = $1' `
   | Set-Content -Path "E:\dev\emulatest\MainWindow.ps1"
+
