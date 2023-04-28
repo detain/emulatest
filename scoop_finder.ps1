@@ -9,9 +9,107 @@ $global:bin2buckets = @{}
 $global:regexes = @()
 $global:totalBins = 0
 
+function Get-Emulator() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$BucketName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$Path
+    )
+    $BucketData = Restore-Bucket($BucketName)
+    $urls = Get-Bucket-Url
+    $extractDir = Get-Bucket-ExtractDir
+    $urls
+    $extractDir
+    $BucketData
+    $baseDir = "$($PWD)\new\$($BucketName)"
+    Write-Output "$baseDir Upgrading $BucketName located at $Path to version $($BucketData.version) with zip $urls"
+    New-Item -ItemType Directory -Path $baseDir -Force | Out-Null
+    $bucketZip = $urls | Split-Path -Leaf
+    Invoke-WebRequest -Uri $urls -OutFile $bucketZip
+    Expand-Archive -Path $bucketZip -DestinationPath $baseDir -Force
+    $resultCode = cmd /c "7z x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`"
+    if ($resultCode -ne 0) {
+        $results += "7z $emuId"
+        Remove-Item -Path $bucketZip -Force
+    }
+    Write-Output "Got Exit Code $resultCode"
+
+}
+
+<#     foreach ($emuId in $data.emus.Keys) {
+        $emuData = $data.emus[$emuId]
+        $baseDir = "$PSScriptRoot\new\$emuId"
+        $moveDir = "$baseDir\extracted"
+        $finalDir = "$baseDir\final"
+
+        if (!(Test-Path $finalDir)) {
+            Write-Output "Emulator $emuId"
+            New-Item -ItemType Directory -Path $moveDir -Force | Out-Null
+            Write-Output "  Downloading $($emuData.urls)"
+            Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
+            Expand-Archive -Path "master.zip" -DestinationPath ".\" -Force
+            Remove-Item -Path "master.zip" -Force
+
+            $resultCode = cmd /c "wget --max-redirect 100 -c $($emuData.urls) -O `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+            if ($resultCode -ne 0) {
+                $results += "dl $emuId"
+            }
+            Write-Output "Got Exit Code $resultCode"
+            Write-Output "  Extracting $($emuData.urls)"
+            if ($emuData.urls -match '\.tar\.(xz|bz2|gz)$') {
+                $resultCode = cmd /c "tar -C `"$moveDir`" -xvf `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+            }
+            else {
+                $resultCode = cmd /c "7z x -bb0 -aoa -o`"$moveDir`" `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+            }
+            if ($resultCode -ne 0) {
+                $results += "7z $emuId"
+            }
+            Write-Output "Got Exit Code $resultCode"
+            if ($emuData.extractDir -and (Test-Path "$moveDir\$($emuData.extractDir)")) {
+                $moveDir += "\$($emuData.extractDir)"
+            }
+            Move-Item $moveDir $finalDir
+            $results
+        }
+    }
+}
+ #>
+
+function Install-Emulator() {
+    foreach ($emuPath in $data.paths.Keys) {
+        $emus = $data.paths[$emuPath]
+        if ($emus.Count -ne 1) {
+            Write-Output "Wrong count of emus ($($emus -join ','))"
+            continue
+        }
+        $emuId = $emus[0]
+        $emuData = $data.emus[$emuId]
+        $baseDir = "$PSScriptRoot\new\$emuId"
+        $backupZip = "$baseDir\backup_$emuId_$($emuPath -replace '\', '_')_$(Get-Date -Format yyyyMMdd).zip"
+        $finalDir = "$baseDir\final"
+        if ($doBackup && !Test-Path $backupZip) {
+            Write-Output "  Backing up to $backupZip";
+            $escapedBackupZip = [System.Management.Automation.WildcardPattern]::Escape($backupZip)
+            $escapedEmuPath = [System.Management.Automation.WildcardPattern]::Escape($emuPath)
+            & 'zip.exe' '-r' $escapedBackupZip $escapedEmuPath | Write-Output
+        }
+        if (Test-Path $finalDir) {
+            Write-Output "Emulator $emuId $finalDir => $emuPath"
+            $cmd = "cp -afv `"$finalDir\*`" `"$emuPath\`""
+            Write-Output $cmd
+            cmd /c $cmd
+        }
+    }
+}
+
+
 function Expand-Repo {
     Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
-    Expand-Archive -Path "master.zip" -DestinationPath "./" -Force
+    Expand-Archive -Path "master.zip" -DestinationPath ".\" -Force
     Remove-Item -Path "master.zip" -Force
 }
 
@@ -21,7 +119,7 @@ function Remove-Repo {
 
 function Get-BucketCollection {
     $global:bucketNames = @()
-    Get-ChildItem 'scoop-emulators-master/bucket/*/*.json' | ForEach-Object {
+    Get-ChildItem 'scoop-emulators-master\bucket\*\*.json' | ForEach-Object {
         $fileName = $_
         $global:bucketNames += [System.IO.Path]::GetFileNameWithoutExtension($fileName)
     }
@@ -34,25 +132,30 @@ function Compare-Numeric ($Value) {
 
 function Restore-Bucket ($Bucket) {
     if ($global:LoadedBucketName -ne $Bucket) {
-        $letter = $Bucket.Substring(0, 1)
-        if (Compare-Numeric $letter) {
-            $letter = "#"
-        }
-        $fileName = "scoop-emulators-master/bucket/$letter/$Bucket.json"
-        $data = Get-Content $fileName | ConvertFrom-Json -AsHashtable
-        if ($data.ContainsKey("##")) {
-            foreach ($row in $data["##"]) {
-                if ($row -match '^(.*?):(.*)$') {
-                    $field = $matches[1].Trim()
-                    $value = $matches[2].Trim()
-                    $data[$field] = $value
-                }
+        if ($global:LoadedBuckets.ContainsKey($Bucket)) {
+            $global:LoadedBucketName = $Bucket
+            $global:LoadedBucketData = $global:LoadedBuckets[$Bucket]
+        } else {
+            $letter = $Bucket.Substring(0, 1)
+            if (Compare-Numeric $letter) {
+                $letter = "#"
             }
-            $data.Remove("##") # Remove the ## element from the hashtable
+            $fileName = "scoop-emulators-master\bucket\$letter\$Bucket.json"
+            $data = Get-Content $fileName | ConvertFrom-Json -AsHashtable
+            if ($data.ContainsKey("##")) {
+                foreach ($row in $data["##"]) {
+                    if ($row -match '^(.*?):(.*)$') {
+                        $field = $matches[1].Trim()
+                        $value = $matches[2].Trim()
+                        $data[$field] = $value
+                    }
+                }
+                $data.Remove("##") # Remove the ## element from the hashtable
+            }
+            $global:LoadedBucketData = $data
+            $global:LoadedBucketName = $Bucket
+            $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
         }
-        $global:LoadedBucketData = $data
-        $global:LoadedBucketName = $Bucket
-        $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
     }
     return $global:LoadedBucketData
 }
@@ -75,19 +178,16 @@ function Get-Bucket-Field($field = 'bin', $lastOnly = $false) {
     return ''
 }
 
-function Get-Bucket-ExtracteDir() {
-    $extractDir = Get-Bucket-Field('extract_dir', $true)
-    return $extractDir
+function Get-Bucket-ExtractDir() {
+    return Get-Bucket-Field('extract_dir')
 }
 
 function Get-Bucket-Url() {
-    $urls = Get-Bucket-Field('url')
-    return $urls
+    return Get-Bucket-Field('url')
 }
 
 function Get-Bucket-Bin() {
-    $bins = Get-Bucket-Field('bin')
-    return $bins
+    return Get-Bucket-Field('bin')
 }
 
 function Read-BucketCollection {
@@ -96,7 +196,7 @@ function Read-BucketCollection {
         Restore-Bucket($bucket)
         $bins = Get-Bucket-Bin
         $urls = Get-Bucket-Url
-        $extractDir = Get-Bucket-ExtracteDir
+        $extractDir = Get-Bucket-ExtractDir
         $global:allBuckets[$bucket] = @{
             'bins' = $bins
             'urls' = $urls
