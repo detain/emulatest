@@ -3,7 +3,7 @@
 #  Name    : E:\dev\emulatest\MainWindow.ps1  
 #  Version : 0.1
 #  Author  :
-#  Date    : 4/27/2023
+#  Date    : 4/28/2023
 #
  #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
@@ -41,9 +41,9 @@ $PathsList = New-Object System.Windows.Forms.ListBox
 $splitContainerRight = New-Object System.Windows.Forms.SplitContainer
 $BucketsGroup = New-Object System.Windows.Forms.GroupBox
 $BucketsTable = New-Object System.Windows.Forms.TableLayoutPanel
-$BucketDescriptionText = New-Object System.Windows.Forms.TextBox
-$BucketLogoImage = New-Object System.Windows.Forms.PictureBox
 $BucketsList = New-Object System.Windows.Forms.ListBox
+$BucketLogoImage = New-Object System.Windows.Forms.PictureBox
+$BucketDescriptionText = New-Object System.Windows.Forms.TextBox
 $BucketsLoadedLabel = New-Object System.Windows.Forms.Label
 $BucketLogoLabel = New-Object System.Windows.Forms.Label
 $BucketsLoadedText = New-Object System.Windows.Forms.Label
@@ -61,6 +61,8 @@ $BucketNameText = New-Object System.Windows.Forms.Label
 $EmulatorsGroup = New-Object System.Windows.Forms.GroupBox
 $EmulatorsTable = New-Object System.Windows.Forms.DataGridView
 $contextMenuStrip1 = New-Object System.Windows.Forms.ContextMenuStrip($components)
+$SaveButton = New-Object System.Windows.Forms.Button
+$LoadButton = New-Object System.Windows.Forms.Button
 $Select = New-Object System.Windows.Forms.DataGridViewCheckBoxColumn
 $Path = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $Emulator = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
@@ -127,6 +129,8 @@ $LogText.Text = ""
 # PathsGroup
 #
 $PathsGroup.AutoSizeMode = [System.Windows.Forms.AutoSizeMode]::GrowAndShrink
+$PathsGroup.Controls.Add($LoadButton)
+$PathsGroup.Controls.Add($SaveButton)
 $PathsGroup.Controls.Add($UpdateButton)
 $PathsGroup.Controls.Add($ScanPathButton)
 $PathsGroup.Controls.Add($RemovePathButton)
@@ -257,16 +261,15 @@ $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Wi
 $BucketsTable.Size = New-Object System.Drawing.Size(708, 234)
 $BucketsTable.TabIndex = 18
 #
-# BucketDescriptionText
+# BucketsList
 #
-$BucketDescriptionText.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketDescriptionText.Location = New-Object System.Drawing.Point(529, 3)
-$BucketDescriptionText.Multiline = $true
-$BucketDescriptionText.Name = "BucketDescriptionText"
-$BucketDescriptionText.ReadOnly = $true
-$BucketsTable.SetRowSpan($BucketDescriptionText, 3)
-$BucketDescriptionText.Size = New-Object System.Drawing.Size(176, 111)
-$BucketDescriptionText.TabIndex = 17
+$BucketsList.Dock = [System.Windows.Forms.DockStyle]::Fill
+$BucketsList.FormattingEnabled = $true
+$BucketsList.Location = New-Object System.Drawing.Point(3, 3)
+$BucketsList.Name = "BucketsList"
+$BucketsTable.SetRowSpan($BucketsList, 6)
+$BucketsList.Size = New-Object System.Drawing.Size(139, 228)
+$BucketsList.TabIndex = 0
 #
 # BucketLogoImage
 #
@@ -279,15 +282,16 @@ $BucketLogoImage.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::AutoSize
 $BucketLogoImage.TabIndex = 15
 $BucketLogoImage.TabStop = $false
 #
-# BucketsList
+# BucketDescriptionText
 #
-$BucketsList.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketsList.FormattingEnabled = $true
-$BucketsList.Location = New-Object System.Drawing.Point(3, 3)
-$BucketsList.Name = "BucketsList"
-$BucketsTable.SetRowSpan($BucketsList, 6)
-$BucketsList.Size = New-Object System.Drawing.Size(139, 228)
-$BucketsList.TabIndex = 0
+$BucketDescriptionText.Dock = [System.Windows.Forms.DockStyle]::Fill
+$BucketDescriptionText.Location = New-Object System.Drawing.Point(529, 3)
+$BucketDescriptionText.Multiline = $true
+$BucketDescriptionText.Name = "BucketDescriptionText"
+$BucketDescriptionText.ReadOnly = $true
+$BucketsTable.SetRowSpan($BucketDescriptionText, 3)
+$BucketDescriptionText.Size = New-Object System.Drawing.Size(176, 111)
+$BucketDescriptionText.TabIndex = 17
 #
 # BucketsLoadedLabel
 #
@@ -429,6 +433,7 @@ $EmulatorsGroup.Text = "Discovered Emulators"
 #
 # EmulatorsTable
 #
+$EmulatorsTable.AllowUserToOrderColumns = $true
 $EmulatorsTable.AutoSizeColumnsMode = [System.Windows.Forms.DataGridViewAutoSizeColumnsMode]::Fill
 $EmulatorsTable.ColumnHeadersHeightSizeMode = [System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode]::AutoSize
 $EmulatorsTable.Columns.AddRange(
@@ -448,49 +453,57 @@ $EmulatorsTable.TabIndex = 0
 $contextMenuStrip1.Name = "contextMenuStrip1"
 $contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
 #
+# SaveButton
+#
+$SaveButton.Location = New-Object System.Drawing.Point(272, 137)
+$SaveButton.Name = "SaveButton"
+$SaveButton.Size = New-Object System.Drawing.Size(75, 23)
+$SaveButton.TabIndex = 5
+$SaveButton.Text = "Save Config"
+$SaveButton.UseVisualStyleBackColor = $true
+#
+# LoadButton
+#
+$LoadButton.Location = New-Object System.Drawing.Point(272, 167)
+$LoadButton.Name = "LoadButton"
+$LoadButton.Size = New-Object System.Drawing.Size(75, 23)
+$LoadButton.TabIndex = 6
+$LoadButton.Text = "Load Config"
+$LoadButton.UseVisualStyleBackColor = $true
+#
 # Select
 #
-$Select.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
 $Select.FillWeight = 10
 $Select.HeaderText = ""
 $Select.Name = "Select"
-$Select.Width = 21
 #
 # Path
 #
-$Path.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
 $Path.FillWeight = 40
 $Path.HeaderText = "Path"
 $Path.Name = "Path"
 $Path.ReadOnly = $true
-$Path.Width = 54
 #
 # Emulator
 #
-$Emulator.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
 $Emulator.FillWeight = 20
 $Emulator.HeaderText = "Emulator"
 $Emulator.Name = "Emulator"
 $Emulator.ReadOnly = $true
-$Emulator.Width = 73
 #
 # CurrentVersion
 #
-$CurrentVersion.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
 $CurrentVersion.FillWeight = 15
 $CurrentVersion.HeaderText = "Current Version"
 $CurrentVersion.Name = "CurrentVersion"
 $CurrentVersion.ReadOnly = $true
-$CurrentVersion.Width = 96
 #
 # NewVersion
 #
-$NewVersion.AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
 $NewVersion.FillWeight = 15
 $NewVersion.HeaderText = "New Version"
 $NewVersion.Name = "NewVersion"
 $NewVersion.ReadOnly = $true
-$NewVersion.Width = 85
 #
 # MainWindow
 #

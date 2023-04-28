@@ -29,7 +29,7 @@ function Save-Emulatest() {
     Set-Content -Path $jsonPath -Value $json
 }
 
-function Load-Emulatest() {
+function Restore-Emulatest() {
     # Read the JSON string from the file
     $jsonPath = "$($env:USERPROFILE)\.emulatest.json"
     $json = Get-Content -Path $jsonPath -Raw
@@ -49,6 +49,12 @@ function Load-Emulatest() {
     }
 }
 
+$LoadButton.Add_Click({
+    Restore-Emulatest
+})
+$SaveButton.Add_Click({
+    Save-Emulatest
+})
 # Add event handlers to the add and remove buttons to modify the list of directories:
 $AddPathButton.Add_Click({
         $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
