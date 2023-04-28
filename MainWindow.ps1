@@ -33,6 +33,8 @@ $splitContainerLeft = New-Object System.Windows.Forms.SplitContainer
 $LogGroup = New-Object System.Windows.Forms.GroupBox
 $LogText = New-Object System.Windows.Forms.RichTextBox
 $PathsGroup = New-Object System.Windows.Forms.GroupBox
+$LoadButton = New-Object System.Windows.Forms.Button
+$SaveButton = New-Object System.Windows.Forms.Button
 $UpdateButton = New-Object System.Windows.Forms.Button
 $ScanPathButton = New-Object System.Windows.Forms.Button
 $RemovePathButton = New-Object System.Windows.Forms.Button
@@ -60,14 +62,12 @@ $BucketLicenseText = New-Object System.Windows.Forms.Label
 $BucketNameText = New-Object System.Windows.Forms.Label
 $EmulatorsGroup = New-Object System.Windows.Forms.GroupBox
 $EmulatorsTable = New-Object System.Windows.Forms.DataGridView
-$contextMenuStrip1 = New-Object System.Windows.Forms.ContextMenuStrip($components)
-$SaveButton = New-Object System.Windows.Forms.Button
-$LoadButton = New-Object System.Windows.Forms.Button
 $Select = New-Object System.Windows.Forms.DataGridViewCheckBoxColumn
 $Path = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $Emulator = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $CurrentVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $NewVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
+$contextMenuStrip1 = New-Object System.Windows.Forms.ContextMenuStrip($components)
 #
 # splitContainerMain
 #
@@ -82,8 +82,8 @@ $splitContainerMain.Panel1.Controls.Add($splitContainerLeft)
 # splitContainerMain.Panel2
 #
 $splitContainerMain.Panel2.Controls.Add($splitContainerRight)
-$splitContainerMain.Size = New-Object System.Drawing.Size(1075, 513)
-$splitContainerMain.SplitterDistance = 357
+$splitContainerMain.Size = New-Object System.Drawing.Size(1116, 516)
+$splitContainerMain.SplitterDistance = 370
 $splitContainerMain.TabIndex = 0
 #
 # splitContainerLeft
@@ -100,8 +100,8 @@ $splitContainerLeft.Panel1.Controls.Add($LogGroup)
 # splitContainerLeft.Panel2
 #
 $splitContainerLeft.Panel2.Controls.Add($PathsGroup)
-$splitContainerLeft.Size = New-Object System.Drawing.Size(357, 513)
-$splitContainerLeft.SplitterDistance = 238
+$splitContainerLeft.Size = New-Object System.Drawing.Size(370, 516)
+$splitContainerLeft.SplitterDistance = 239
 $splitContainerLeft.TabIndex = 0
 #
 # LogGroup
@@ -111,7 +111,7 @@ $LogGroup.Controls.Add($LogText)
 $LogGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
 $LogGroup.Location = New-Object System.Drawing.Point(0, 0)
 $LogGroup.Name = "LogGroup"
-$LogGroup.Size = New-Object System.Drawing.Size(357, 238)
+$LogGroup.Size = New-Object System.Drawing.Size(370, 239)
 $LogGroup.TabIndex = 3
 $LogGroup.TabStop = $false
 $LogGroup.Text = "Log"
@@ -122,7 +122,7 @@ $LogText.Dock = [System.Windows.Forms.DockStyle]::Fill
 $LogText.Location = New-Object System.Drawing.Point(3, 16)
 $LogText.Name = "LogText"
 $LogText.ReadOnly = $true
-$LogText.Size = New-Object System.Drawing.Size(351, 219)
+$LogText.Size = New-Object System.Drawing.Size(364, 220)
 $LogText.TabIndex = 0
 $LogText.Text = ""
 #
@@ -139,15 +139,35 @@ $PathsGroup.Controls.Add($PathsList)
 $PathsGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
 $PathsGroup.Location = New-Object System.Drawing.Point(0, 0)
 $PathsGroup.Name = "PathsGroup"
-$PathsGroup.Size = New-Object System.Drawing.Size(357, 271)
+$PathsGroup.Size = New-Object System.Drawing.Size(370, 273)
 $PathsGroup.TabIndex = 2
 $PathsGroup.TabStop = $false
 $PathsGroup.Text = "Scan Paths"
 #
+# LoadButton
+#
+$LoadButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
+$LoadButton.Location = New-Object System.Drawing.Point(281, 163)
+$LoadButton.Name = "LoadButton"
+$LoadButton.Size = New-Object System.Drawing.Size(82, 23)
+$LoadButton.TabIndex = 6
+$LoadButton.Text = "Load Config"
+$LoadButton.UseVisualStyleBackColor = $true
+#
+# SaveButton
+#
+$SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
+$SaveButton.Location = New-Object System.Drawing.Point(281, 133)
+$SaveButton.Name = "SaveButton"
+$SaveButton.Size = New-Object System.Drawing.Size(83, 23)
+$SaveButton.TabIndex = 5
+$SaveButton.Text = "Save Config"
+$SaveButton.UseVisualStyleBackColor = $true
+#
 # UpdateButton
 #
 $UpdateButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
-$UpdateButton.Location = New-Object System.Drawing.Point(272, 107)
+$UpdateButton.Location = New-Object System.Drawing.Point(281, 103)
 $UpdateButton.Name = "UpdateButton"
 $UpdateButton.Size = New-Object System.Drawing.Size(83, 23)
 $UpdateButton.TabIndex = 4
@@ -157,7 +177,7 @@ $UpdateButton.UseVisualStyleBackColor = $true
 # ScanPathButton
 #
 $ScanPathButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
-$ScanPathButton.Location = New-Object System.Drawing.Point(271, 77)
+$ScanPathButton.Location = New-Object System.Drawing.Point(280, 73)
 $ScanPathButton.Name = "ScanPathButton"
 $ScanPathButton.Size = New-Object System.Drawing.Size(84, 23)
 $ScanPathButton.TabIndex = 3
@@ -167,7 +187,7 @@ $ScanPathButton.UseVisualStyleBackColor = $true
 # RemovePathButton
 #
 $RemovePathButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
-$RemovePathButton.Location = New-Object System.Drawing.Point(271, 48)
+$RemovePathButton.Location = New-Object System.Drawing.Point(280, 44)
 $RemovePathButton.Name = "RemovePathButton"
 $RemovePathButton.Size = New-Object System.Drawing.Size(84, 23)
 $RemovePathButton.TabIndex = 2
@@ -177,7 +197,7 @@ $RemovePathButton.UseVisualStyleBackColor = $true
 # AddPathButton
 #
 $AddPathButton.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Right"
-$AddPathButton.Location = New-Object System.Drawing.Point(271, 19)
+$AddPathButton.Location = New-Object System.Drawing.Point(280, 15)
 $AddPathButton.Name = "AddPathButton"
 $AddPathButton.Size = New-Object System.Drawing.Size(84, 23)
 $AddPathButton.TabIndex = 1
@@ -186,11 +206,11 @@ $AddPathButton.UseVisualStyleBackColor = $true
 #
 # PathsList
 #
-$PathsList.Dock = [System.Windows.Forms.DockStyle]::Left
+$PathsList.Anchor = [System.Windows.Forms.AnchorStyles]"Top,Bottom,Left,Right"
 $PathsList.FormattingEnabled = $true
 $PathsList.Location = New-Object System.Drawing.Point(3, 16)
 $PathsList.Name = "PathsList"
-$PathsList.Size = New-Object System.Drawing.Size(232, 252)
+$PathsList.Size = New-Object System.Drawing.Size(275, 251)
 $PathsList.TabIndex = 0
 #
 # splitContainerRight
@@ -207,8 +227,8 @@ $splitContainerRight.Panel1.Controls.Add($BucketsGroup)
 # splitContainerRight.Panel2
 #
 $splitContainerRight.Panel2.Controls.Add($EmulatorsGroup)
-$splitContainerRight.Size = New-Object System.Drawing.Size(714, 513)
-$splitContainerRight.SplitterDistance = 253
+$splitContainerRight.Size = New-Object System.Drawing.Size(742, 516)
+$splitContainerRight.SplitterDistance = 254
 $splitContainerRight.TabIndex = 0
 #
 # BucketsGroup
@@ -218,7 +238,7 @@ $BucketsGroup.Controls.Add($BucketsTable)
 $BucketsGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
 $BucketsGroup.Location = New-Object System.Drawing.Point(0, 0)
 $BucketsGroup.Name = "BucketsGroup"
-$BucketsGroup.Size = New-Object System.Drawing.Size(714, 253)
+$BucketsGroup.Size = New-Object System.Drawing.Size(742, 254)
 $BucketsGroup.TabIndex = 4
 $BucketsGroup.TabStop = $false
 $BucketsGroup.Text = "Emulators Database"
@@ -227,10 +247,10 @@ $BucketsGroup.Text = "Emulators Database"
 #
 $BucketsTable.ColumnCount = 5
 $BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 145)))
-$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 100)))
-$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 50)))
-$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 100)))
-$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 50)))
+$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 80)))
+$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 40)))
+$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 80)))
+$BucketsTable.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 60)))
 $BucketsTable.Controls.Add($BucketsList, 0, 0)
 $BucketsTable.Controls.Add($BucketLogoImage, 4, 3)
 $BucketsTable.Controls.Add($BucketDescriptionText, 4, 0)
@@ -258,7 +278,7 @@ $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Wi
 $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, 16.66667)))
 $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, 16.66667)))
 $BucketsTable.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, 16.66667)))
-$BucketsTable.Size = New-Object System.Drawing.Size(708, 234)
+$BucketsTable.Size = New-Object System.Drawing.Size(736, 235)
 $BucketsTable.TabIndex = 18
 #
 # BucketsList
@@ -268,16 +288,16 @@ $BucketsList.FormattingEnabled = $true
 $BucketsList.Location = New-Object System.Drawing.Point(3, 3)
 $BucketsList.Name = "BucketsList"
 $BucketsTable.SetRowSpan($BucketsList, 6)
-$BucketsList.Size = New-Object System.Drawing.Size(139, 228)
+$BucketsList.Size = New-Object System.Drawing.Size(139, 229)
 $BucketsList.TabIndex = 0
 #
 # BucketLogoImage
 #
 $BucketLogoImage.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketLogoImage.Location = New-Object System.Drawing.Point(529, 120)
+$BucketLogoImage.Location = New-Object System.Drawing.Point(480, 120)
 $BucketLogoImage.Name = "BucketLogoImage"
 $BucketsTable.SetRowSpan($BucketLogoImage, 3)
-$BucketLogoImage.Size = New-Object System.Drawing.Size(176, 111)
+$BucketLogoImage.Size = New-Object System.Drawing.Size(253, 112)
 $BucketLogoImage.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::AutoSize
 $BucketLogoImage.TabIndex = 15
 $BucketLogoImage.TabStop = $false
@@ -285,12 +305,12 @@ $BucketLogoImage.TabStop = $false
 # BucketDescriptionText
 #
 $BucketDescriptionText.Dock = [System.Windows.Forms.DockStyle]::Fill
-$BucketDescriptionText.Location = New-Object System.Drawing.Point(529, 3)
+$BucketDescriptionText.Location = New-Object System.Drawing.Point(480, 3)
 $BucketDescriptionText.Multiline = $true
 $BucketDescriptionText.Name = "BucketDescriptionText"
 $BucketDescriptionText.ReadOnly = $true
 $BucketsTable.SetRowSpan($BucketDescriptionText, 3)
-$BucketDescriptionText.Size = New-Object System.Drawing.Size(176, 111)
+$BucketDescriptionText.Size = New-Object System.Drawing.Size(253, 111)
 $BucketDescriptionText.TabIndex = 17
 #
 # BucketsLoadedLabel
@@ -305,7 +325,7 @@ $BucketsLoadedLabel.Text = "# Buckets"
 # BucketLogoLabel
 #
 $BucketLogoLabel.AutoSize = $true
-$BucketLogoLabel.Location = New-Object System.Drawing.Point(429, 117)
+$BucketLogoLabel.Location = New-Object System.Drawing.Point(400, 117)
 $BucketLogoLabel.Name = "BucketLogoLabel"
 $BucketLogoLabel.Size = New-Object System.Drawing.Size(31, 13)
 $BucketLogoLabel.TabIndex = 16
@@ -314,7 +334,7 @@ $BucketLogoLabel.Text = "Logo"
 # BucketsLoadedText
 #
 $BucketsLoadedText.AutoSize = $true
-$BucketsLoadedText.Location = New-Object System.Drawing.Point(248, 195)
+$BucketsLoadedText.Location = New-Object System.Drawing.Point(228, 195)
 $BucketsLoadedText.Name = "BucketsLoadedText"
 $BucketsLoadedText.Size = New-Object System.Drawing.Size(13, 13)
 $BucketsLoadedText.TabIndex = 10
@@ -332,7 +352,7 @@ $EmulatorsCountLabel.Text = "# Emulators"
 # BucketDescriptionLabel
 #
 $BucketDescriptionLabel.AutoSize = $true
-$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(429, 0)
+$BucketDescriptionLabel.Location = New-Object System.Drawing.Point(400, 0)
 $BucketDescriptionLabel.Name = "BucketDescriptionLabel"
 $BucketDescriptionLabel.Size = New-Object System.Drawing.Size(60, 13)
 $BucketDescriptionLabel.TabIndex = 13
@@ -341,7 +361,7 @@ $BucketDescriptionLabel.Text = "Description"
 # EmulatorsCountText
 #
 $EmulatorsCountText.AutoSize = $true
-$EmulatorsCountText.Location = New-Object System.Drawing.Point(248, 156)
+$EmulatorsCountText.Location = New-Object System.Drawing.Point(228, 156)
 $EmulatorsCountText.Name = "EmulatorsCountText"
 $EmulatorsCountText.Size = New-Object System.Drawing.Size(13, 13)
 $EmulatorsCountText.TabIndex = 8
@@ -386,7 +406,7 @@ $BucketVersionLabel.Text = "Version"
 # BucketVersionText
 #
 $BucketVersionText.AutoSize = $true
-$BucketVersionText.Location = New-Object System.Drawing.Point(248, 117)
+$BucketVersionText.Location = New-Object System.Drawing.Point(228, 117)
 $BucketVersionText.Name = "BucketVersionText"
 $BucketVersionText.Size = New-Object System.Drawing.Size(13, 13)
 $BucketVersionText.TabIndex = 12
@@ -395,7 +415,7 @@ $BucketVersionText.Text = "v"
 # BucketHomeText
 #
 $BucketHomeText.AutoSize = $true
-$BucketHomeText.Location = New-Object System.Drawing.Point(248, 78)
+$BucketHomeText.Location = New-Object System.Drawing.Point(228, 78)
 $BucketHomeText.Name = "BucketHomeText"
 $BucketHomeText.Size = New-Object System.Drawing.Size(38, 13)
 $BucketHomeText.TabIndex = 6
@@ -404,7 +424,7 @@ $BucketHomeText.Text = "http://"
 # BucketLicenseText
 #
 $BucketLicenseText.AutoSize = $true
-$BucketLicenseText.Location = New-Object System.Drawing.Point(248, 39)
+$BucketLicenseText.Location = New-Object System.Drawing.Point(228, 39)
 $BucketLicenseText.Name = "BucketLicenseText"
 $BucketLicenseText.Size = New-Object System.Drawing.Size(53, 13)
 $BucketLicenseText.TabIndex = 4
@@ -413,7 +433,7 @@ $BucketLicenseText.Text = "Unknown"
 # BucketNameText
 #
 $BucketNameText.AutoSize = $true
-$BucketNameText.Location = New-Object System.Drawing.Point(248, 0)
+$BucketNameText.Location = New-Object System.Drawing.Point(228, 0)
 $BucketNameText.Name = "BucketNameText"
 $BucketNameText.Size = New-Object System.Drawing.Size(74, 13)
 $BucketNameText.TabIndex = 2
@@ -426,7 +446,7 @@ $EmulatorsGroup.Controls.Add($EmulatorsTable)
 $EmulatorsGroup.Dock = [System.Windows.Forms.DockStyle]::Fill
 $EmulatorsGroup.Location = New-Object System.Drawing.Point(0, 0)
 $EmulatorsGroup.Name = "EmulatorsGroup"
-$EmulatorsGroup.Size = New-Object System.Drawing.Size(714, 256)
+$EmulatorsGroup.Size = New-Object System.Drawing.Size(742, 258)
 $EmulatorsGroup.TabIndex = 5
 $EmulatorsGroup.TabStop = $false
 $EmulatorsGroup.Text = "Discovered Emulators"
@@ -445,31 +465,8 @@ $NewVersion)
 $EmulatorsTable.Dock = [System.Windows.Forms.DockStyle]::Fill
 $EmulatorsTable.Location = New-Object System.Drawing.Point(3, 16)
 $EmulatorsTable.Name = "EmulatorsTable"
-$EmulatorsTable.Size = New-Object System.Drawing.Size(708, 237)
+$EmulatorsTable.Size = New-Object System.Drawing.Size(736, 239)
 $EmulatorsTable.TabIndex = 0
-#
-# contextMenuStrip1
-#
-$contextMenuStrip1.Name = "contextMenuStrip1"
-$contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
-#
-# SaveButton
-#
-$SaveButton.Location = New-Object System.Drawing.Point(272, 137)
-$SaveButton.Name = "SaveButton"
-$SaveButton.Size = New-Object System.Drawing.Size(75, 23)
-$SaveButton.TabIndex = 5
-$SaveButton.Text = "Save Config"
-$SaveButton.UseVisualStyleBackColor = $true
-#
-# LoadButton
-#
-$LoadButton.Location = New-Object System.Drawing.Point(272, 167)
-$LoadButton.Name = "LoadButton"
-$LoadButton.Size = New-Object System.Drawing.Size(75, 23)
-$LoadButton.TabIndex = 6
-$LoadButton.Text = "Load Config"
-$LoadButton.UseVisualStyleBackColor = $true
 #
 # Select
 #
@@ -505,10 +502,15 @@ $NewVersion.HeaderText = "New Version"
 $NewVersion.Name = "NewVersion"
 $NewVersion.ReadOnly = $true
 #
+# contextMenuStrip1
+#
+$contextMenuStrip1.Name = "contextMenuStrip1"
+$contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
+#
 # MainWindow
 #
 $MainWindow.AutoSizeMode = [System.Windows.Forms.AutoSizeMode]::GrowAndShrink
-$MainWindow.ClientSize = New-Object System.Drawing.Size(1085, 523)
+$MainWindow.ClientSize = New-Object System.Drawing.Size(1126, 526)
 $MainWindow.Controls.Add($splitContainerMain)
 $MainWindow.MinimumSize = New-Object System.Drawing.Size(800, 400)
 $MainWindow.Name = "MainWindow"
