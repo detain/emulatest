@@ -3,7 +3,7 @@
 #  Name    : E:\dev\emulatest\MainWindow.ps1  
 #  Version : 0.1
 #  Author  :
-#  Date    : 4/28/2023
+#  Date    : 4/30/2023
 #
  #  Generated with ConvertForm module version 2.0.0
 #  PowerShell version 7.3.4
@@ -27,7 +27,6 @@ Add-Type -AssemblyName System.Drawing
 
 $MainWindow = New-Object System.Windows.Forms.Form
 
-$components = New-Object System.ComponentModel.Container
 $splitContainerMain = New-Object System.Windows.Forms.SplitContainer
 $splitContainerLeft = New-Object System.Windows.Forms.SplitContainer
 $LogGroup = New-Object System.Windows.Forms.GroupBox
@@ -67,7 +66,6 @@ $Path = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $Emulator = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $CurrentVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
 $NewVersion = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
-$contextMenuStrip1 = New-Object System.Windows.Forms.ContextMenuStrip($components)
 #
 # splitContainerMain
 #
@@ -501,11 +499,6 @@ $NewVersion.FillWeight = 15
 $NewVersion.HeaderText = "New Version"
 $NewVersion.Name = "NewVersion"
 $NewVersion.ReadOnly = $true
-#
-# contextMenuStrip1
-#
-$contextMenuStrip1.Name = "contextMenuStrip1"
-$contextMenuStrip1.Size = New-Object System.Drawing.Size(61, 4)
 #
 # MainWindow
 #
