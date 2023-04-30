@@ -126,9 +126,9 @@ function Restore-Bucket {
             if ($data.ContainsKey("##")) {
                 foreach ($row in $data["##"]) {
                     if ($row -match '^(.*?):(.*)$') {
-                        $field = $matches[1].Trim()
+                        $Field = $matches[1].Trim()
                         $value = $matches[2].Trim()
-                        $data[$field] = $value
+                        $data[$Field] = $value
                     }
                 }
                 $data.Remove("##") # Remove the ## element from the hashtable
@@ -141,34 +141,43 @@ function Restore-Bucket {
     return $global:LoadedBucketData
 }
 
-function Get-Bucket-Field($field = 'bin', $lastOnly = $false) {
+function Get-Bucket-Field {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$false)]
+        [string]$Field = 'bin',
+
+        [Parameter(Mandatory=$false)]
+        [boolean]$LastOnly = $false
+    )
+
     if ($global:LoadedBucketData.architecture) {
-        if ($global:LoadedBucketData.architecture['64bit'] -and $global:LoadedBucketData.architecture['64bit'][$field]) {
-            return $global:LoadedBucketData.architecture['64bit'][$field]
+        if ($global:LoadedBucketData.architecture['64bit'] -and $global:LoadedBucketData.architecture['64bit'][$Field]) {
+            return $global:LoadedBucketData.architecture['64bit'][$Field]
         }
-        if ($global:LoadedBucketData.architecture['32bit'] -and $global:LoadedBucketData.architecture['32bit'][$field]) {
-            return $global:LoadedBucketData.architecture['32bit'][$field]
+        if ($global:LoadedBucketData.architecture['32bit'] -and $global:LoadedBucketData.architecture['32bit'][$Field]) {
+            return $global:LoadedBucketData.architecture['32bit'][$Field]
         }
-        if ($global:LoadedBucketData.architecture[$field]) {
-            return $global:LoadedBucketData.architecture[$field]
+        if ($global:LoadedBucketData.architecture[$Field]) {
+            return $global:LoadedBucketData.architecture[$Field]
         }
     }
-    if ($global:LoadedBucketData[$field]) {
-        return $global:LoadedBucketData[$field]
+    if ($global:LoadedBucketData[$Field]) {
+        return $global:LoadedBucketData[$Field]
     }
     return ''
 }
 
 function Get-Bucket-ExtractDir {
-    return Get-Bucket-Field('extract_dir')
+    return Get-Bucket-Field -Field 'extract_dir' -LastOnly
 }
 
 function Get-Bucket-Url {
-    return Get-Bucket-Field('url')
+    return Get-Bucket-Field -Field 'url'
 }
 
 function Get-Bucket-Bin {
-    return Get-Bucket-Field('bin')
+    return Get-Bucket-Field -Field 'bin'
 }
 
 function Read-BucketCollection {
