@@ -9,7 +9,7 @@ $global:bin2buckets = @{}
 $global:regexes = @()
 $global:totalBins = 0
 
-function Get-Emulator() {
+function Get-Emulator {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
@@ -18,66 +18,111 @@ function Get-Emulator() {
         [Parameter(Mandatory=$true)]
         [string]$Path
     )
-    $BucketData = Restore-Bucket($BucketName)
+    $BucketData = Restore-Bucket -BucketName $BucketName
     $urls = Get-Bucket-Url
     $extractDir = Get-Bucket-ExtractDir
-    $urls
-    $extractDir
-    $BucketData
-    $baseDir = "$($PWD)\new\$($BucketName)"
+    $newDir = Join-Path -Path $PWD -ChildPath "new"
+    $baseDir = Join-Path -Path $newDir -ChildPath "$BucketName"
     Write-Output "$baseDir Upgrading $BucketName located at $Path to version $($BucketData.version) with zip $urls"
     New-Item -ItemType Directory -Path $baseDir -Force | Out-Null
     $bucketZip = $urls | Split-Path -Leaf
     Invoke-WebRequest -Uri $urls -OutFile $bucketZip
-    Expand-Archive -Path $bucketZip -DestinationPath $baseDir -Force
-    $resultCode = cmd /c "7z x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`"
-    if ($resultCode -ne 0) {
-        $results += "7z $emuId"
-        Remove-Item -Path $bucketZip -Force
+    try {
+        Write-Output "Extracting '$bucketZip'"
+        $result = cmd /c ".\7zr.exe x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`" 2>&1"
+        if ($LASTEXITCODE -eq 0) {
+            Remove-Item -Path $bucketZip -Force
+            if ($bucketZip -match "\.tar\.") {
+                Get-ChildItem "$baseDir\*.tar" | ForEach-Object {
+                    $bucketZip = $_
+                    Write-Output "Extracting '$bucketZip'"
+                    $result = cmd /c "tar.exe -xvf `"$bucketZip`" -C `"$baseDir`" 2>&1"
+                    if ($LASTEXITCODE -eq 0) {
+                        Remove-Item -Path $bucketZip -Force
+                    } else {
+                        Write-Output "got extraction error: $result"
+                    }
+                }
+            }
+        } else {
+            Write-Output "got extraction error: $result"
+        }
     }
-    Write-Output "Got Exit Code $resultCode"
-
-}
-
-<#     foreach ($emuId in $data.emus.Keys) {
-        $emuData = $data.emus[$emuId]
-        $baseDir = "$PSScriptRoot\new\$emuId"
-        $moveDir = "$baseDir\extracted"
-        $finalDir = "$baseDir\final"
-
-        if (!(Test-Path $finalDir)) {
-            Write-Output "Emulator $emuId"
-            New-Item -ItemType Directory -Path $moveDir -Force | Out-Null
-            Write-Output "  Downloading $($emuData.urls)"
-            Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
-            Expand-Archive -Path "master.zip" -DestinationPath ".\" -Force
-            Remove-Item -Path "master.zip" -Force
-
-            $resultCode = cmd /c "wget --max-redirect 100 -c $($emuData.urls) -O `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
-            if ($resultCode -ne 0) {
-                $results += "dl $emuId"
+    catch {
+        <#Do this if a terminating exception happens#>
+        Write-Output "Something threw an exception"
+        Write-Output $_
+    }
+    if ($LASTEXITCODE -eq 0) {
+        if ($extractDir -ne '') {
+            $oldDir = Join-Path -Path $newDir -ChildPath "old"
+            $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
+            Write-Output "Only keeping the '$extractDir' directory"
+            if (Test-Path -Path $oldDir) {
+                Remove-Item -Recurse -Force "$oldDir"
             }
-            Write-Output "Got Exit Code $resultCode"
-            Write-Output "  Extracting $($emuData.urls)"
-            if ($emuData.urls -match '\.tar\.(xz|bz2|gz)$') {
-                $resultCode = cmd /c "tar -C `"$moveDir`" -xvf `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+            Write-Output "Moving from '$baseDir' to '$oldDir' directory"
+            Move-Item -Force "$baseDir" "$oldDir"
+            Write-Output "Moving from '$moveDir' to 'baseDir' directory"
+            Move-Item -Force "$moveDir" "$baseDir"
+            if (Test-Path -Path $oldDir) {
+                Remove-Item -Recurse -Force "$oldDir"
             }
-            else {
-                $resultCode = cmd /c "7z x -bb0 -aoa -o`"$moveDir`" `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
-            }
-            if ($resultCode -ne 0) {
-                $results += "7z $emuId"
-            }
-            Write-Output "Got Exit Code $resultCode"
-            if ($emuData.extractDir -and (Test-Path "$moveDir\$($emuData.extractDir)")) {
-                $moveDir += "\$($emuData.extractDir)"
-            }
-            Move-Item $moveDir $finalDir
-            $results
+        }
+        $backupDir = Join-Path -Path $PWD -ChildPath "backup/$BucketName"
+        Write-Output "Backing up $Path to $backupDir"
+        New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+        Copy-Item -Path "$Path\*" -Destination "$backupDir" -Recurse
+        Write-Output "Overwriting $Path with files from $baseDir"
+        Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
+        Write-Output "Cleaning up temp files in $baseDir"
+        Remove-Item -Recurse -Force "$baseDir"
+        if (-Not (Test-Path -Path "$newDir\*")) {
+            Remove-Item "$newDir"
         }
     }
 }
- #>
+
+
+#  foreach ($emuId in $data.emus.Keys) {
+#     $emuData = $data.emus[$emuId]
+#     $baseDir = "$PSScriptRoot\new\$emuId"
+#     $moveDir = "$baseDir\extracted"
+#     $finalDir = "$baseDir\final"
+
+#     if (!(Test-Path $finalDir)) {
+#         Write-Output "Emulator $emuId"
+#         New-Item -ItemType Directory -Path $moveDir -Force | Out-Null
+#         Write-Output "  Downloading $($emuData.urls)"
+#         Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
+#         Expand-Archive -Path "master.zip" -DestinationPath ".\" -Force
+#         Remove-Item -Path "master.zip" -Force
+
+#         $resultCode = cmd /c "wget --max-redirect 100 -c $($emuData.urls) -O `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+#         if ($resultCode -ne 0) {
+#             $results += "dl $emuId"
+#         }
+#         Write-Output "Got Exit Code $resultCode"
+#         Write-Output "  Extracting $($emuData.urls)"
+#         if ($emuData.urls -match '\.tar\.(xz|bz2|gz)$') {
+#             $resultCode = cmd /c "tar -C `"$moveDir`" -xvf `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+#         }
+#         else {
+#             $resultCode = cmd /c "7z x -bb0 -aoa -o`"$moveDir`" `"$($baseDir)\$($emuData.urls | Split-Path -Leaf)`""
+#         }
+#         if ($resultCode -ne 0) {
+#             $results += "7z $emuId"
+#         }
+#         Write-Output "Got Exit Code $resultCode"
+#         if ($emuData.extractDir -and (Test-Path "$moveDir\$($emuData.extractDir)")) {
+#             $moveDir += "\$($emuData.extractDir)"
+#         }
+#         Move-Item $moveDir $finalDir
+#         $results
+#     }
+# }
+
+
 
 function Install-Emulator() {
     foreach ($emuPath in $data.paths.Keys) {
@@ -130,17 +175,22 @@ function Compare-Numeric ($Value) {
     return $Value -match "^[\d\.]+$"
 }
 
-function Restore-Bucket ($Bucket) {
-    if ($global:LoadedBucketName -ne $Bucket) {
-        if ($global:LoadedBuckets.ContainsKey($Bucket)) {
-            $global:LoadedBucketName = $Bucket
-            $global:LoadedBucketData = $global:LoadedBuckets[$Bucket]
+function Restore-Bucket {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$BucketName
+    )
+    if ($global:LoadedBucketName -ne $BucketName) {
+        if ($global:LoadedBuckets.ContainsKey($BucketName)) {
+            $global:LoadedBucketName = $BucketName
+            $global:LoadedBucketData = $global:LoadedBuckets[$BucketName]
         } else {
-            $letter = $Bucket.Substring(0, 1)
+            $letter = $BucketName.Substring(0, 1)
             if (Compare-Numeric $letter) {
                 $letter = "#"
             }
-            $fileName = "scoop-emulators-master\bucket\$letter\$Bucket.json"
+            $fileName = "scoop-emulators-master\bucket\$letter\$BucketName.json"
             $data = Get-Content $fileName | ConvertFrom-Json -AsHashtable
             if ($data.ContainsKey("##")) {
                 foreach ($row in $data["##"]) {
@@ -153,7 +203,7 @@ function Restore-Bucket ($Bucket) {
                 $data.Remove("##") # Remove the ## element from the hashtable
             }
             $global:LoadedBucketData = $data
-            $global:LoadedBucketName = $Bucket
+            $global:LoadedBucketName = $BucketName
             $global:LoadedBuckets[$global:LoadedBucketName] = $global:LoadedBucketData
         }
     }
@@ -178,31 +228,31 @@ function Get-Bucket-Field($field = 'bin', $lastOnly = $false) {
     return ''
 }
 
-function Get-Bucket-ExtractDir() {
+function Get-Bucket-ExtractDir {
     return Get-Bucket-Field('extract_dir')
 }
 
-function Get-Bucket-Url() {
+function Get-Bucket-Url {
     return Get-Bucket-Field('url')
 }
 
-function Get-Bucket-Bin() {
+function Get-Bucket-Bin {
     return Get-Bucket-Field('bin')
 }
 
 function Read-BucketCollection {
     $global:bucketNames | ForEach-Object {
-        $bucket = $_
-        Restore-Bucket($bucket)
+        $BucketName = $_
+        Restore-Bucket  -BucketName $BucketName
         $bins = Get-Bucket-Bin
         $urls = Get-Bucket-Url
         $extractDir = Get-Bucket-ExtractDir
-        $global:allBuckets[$bucket] = @{
+        $global:allBuckets[$BucketName] = @{
             'bins' = $bins
             'urls' = $urls
         }
         if (-not [string]::IsNullOrWhiteSpace($extractDir)) {
-            $global:allBuckets[$bucket]['extractDir'] = $extractDir
+            $global:allBuckets[$BucketName]['extractDir'] = $extractDir
         }
         $bins | ForEach-Object {
             $bin = $_
@@ -217,12 +267,12 @@ function Read-BucketCollection {
                 if (-not $global:bin2buckets.ContainsKey($bin)) {
                     $global:bin2buckets[$bin] = @()
                 }
-                if (-not $global:bin2buckets[$bin].Contains($bucket)) {
-                    $global:bin2buckets[$bin] += $bucket
+                if (-not $global:bin2buckets[$bin].Contains($BucketName)) {
+                    $global:bin2buckets[$bin] += $BucketName
                 }
             }
         }
-        #Write-Output("Bucket {0}: {1} {2} {3}" -f $bucket, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
+        #Write-Output("Bucket {0}: {1} {2} {3}" -f $BucketName, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
     }
 }
 

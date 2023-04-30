@@ -78,10 +78,10 @@ $ScanPathButton.Add_Click({
         Find-Emu-Matches
         foreach ($path in $global:pathMatches.Keys) {
             foreach ($bin in $global:pathMatches[$path]) {
-                foreach ($bucket in $global:bin2buckets[$bin]) {
+                foreach ($BucketName in $global:bin2buckets[$bin]) {
                     $newVersion = 'new'
                     $oldVersion = 'old'
-                    $EmulatorsTable.Rows.Add($false, $path, $bucket, $oldVersion, $newVersion)
+                    $EmulatorsTable.Rows.Add($false, $path, $BucketName, $oldVersion, $newVersion)
                 }
             }
         }
@@ -146,8 +146,8 @@ function ScaleBucketLogo($file) {
 
 function BucketSelected($listObj, $listArgs) {
     # $selectedIndex = $listObj.SelectedIndex
-    $bucket = $listObj.SelectedItem
-    $data = Restore-Bucket($bucket)
+    $BucketName = $listObj.SelectedItem
+    $data = Restore-Bucket -BucketName $BucketName
     $BucketNameText.Text = $data.name
     #ScaleBucketLogo($data.logo)
     $BucketLogoImage.Load($data.logo)
