@@ -40,3 +40,10 @@ Searches through directories for known emulator executable files, lets you custo
 * [ ] GitHub Action setup
 * [ ] Documentation
 * [ ] Website
+
+## Dev Links
+
+* [Sample scripts for system administration - PowerShell | Microsoft Learn](https://learn.microsoft.com/en-us/powershell/scripting/samples/sample-scripts-for-administration?view=powershell-7.2)
+* [PowerShell Multithreading: A Deep Dive](https://adamtheautomator.com/powershell-multithreading/#Runspaces_Kinda_Like_Jobs_but_Faster)
+
+

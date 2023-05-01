@@ -1,16 +1,16 @@
 function Save-Emulatest() {
     # Get the paths in the PathsList control
-    $paths = $PathsList.Items | ForEach-Object { $_.ToString() }
+    $Paths = $PathsList.Items | ForEach-Object { $_.ToString() }
     # Get the emulators in the EmulatorsTable control
     $emulators = @()
     foreach ($row in $EmulatorsTable.Rows) {
-        $path = $row.Cells[1].Value
+        $Path = $row.Cells[1].Value
         $emulator = $row.Cells[2].Value
         $newVersion = $row.Cells[3].Value
         $currentVersion = $row.Cells[4].Value
         $checked = $row.Cells[0].Value -eq $true
         $emulators += [PSCustomObject]@{
-            Path = $path
+            Path = $Path
             Emulator = $emulator
             NewVersion = $newVersion
             CurrentVersion = $currentVersion
@@ -19,7 +19,7 @@ function Save-Emulatest() {
     }
     # Combine the paths and emulators into an object
     $emulatest = [PSCustomObject]@{
-        Paths = $paths
+        Paths = $Paths
         Emulators = $emulators
     }
     # Convert the object to JSON format
@@ -37,8 +37,8 @@ function Restore-Emulatest() {
     $emulatest = $json | ConvertFrom-Json
     # Update the PathsList control
     $PathsList.Items.Clear()
-    foreach ($path in $emulatest.Paths) {
-        $PathsList.Items.Add($path) | Out-Null
+    foreach ($Path in $emulatest.Paths) {
+        $PathsList.Items.Add($Path) | Out-Null
     }
     # Update the EmulatorsTable control
     $EmulatorsTable.Rows.Clear()
@@ -76,49 +76,65 @@ $ScanPathButton.Add_Click({
         $LogText.AppendText("Finished scan..." + [Environment]::NewLine)
         $EmulatorsTable.Rows.Clear()
         Find-Emu-Matches
-        foreach ($path in $global:pathMatches.Keys) {
-            foreach ($bin in $global:pathMatches[$path]) {
+        foreach ($Path in $global:pathMatches.Keys) {
+            foreach ($bin in $global:pathMatches[$Path]) {
                 foreach ($BucketName in $global:bin2buckets[$bin]) {
                     $newVersion = 'new'
                     $oldVersion = 'old'
-                    $EmulatorsTable.Rows.Add($false, $path, $BucketName, $oldVersion, $newVersion)
+                    $EmulatorsTable.Rows.Add($false, $Path, $BucketName, $oldVersion, $newVersion)
                 }
             }
         }
     })
+
 $UpdateButton.Add_Click({
+        $LogText.AppendText("Starting update selected emulators..." + [Environment]::NewLine)
         $checkedPathsAndEmulators = @()
         foreach ($row in $EmulatorsTable.Rows) {
             if ($row.Cells[0].Value -eq $true) {
-                $path = $row.Cells[1].Value
-                $emulator = $row.Cells[2].Value
+                $Path = $row.Cells[1].Value
+                $BucketName = $row.Cells[2].Value
                 $checkedPathsAndEmulators += [PSCustomObject]@{
-                    Path = $path
-                    Emulator = $emulator
+                    Path = $Path
+                    Emulator = $BucketName
                 }
-                $LogText.AppendText("I want to update $emulator at $path" + [Environment]::NewLine)
+                $LogText.AppendText("Updating $BucketName at $Path" + [Environment]::NewLine)
+                Update-Emulator -BucketName $BucketName -Path $Path
             }
         }
-        $LogText.AppendText("Starting update selected emulators..." + [Environment]::NewLine)
-
         $LogText.AppendText("Finished update selected emulators." + [Environment]::NewLine)
     })
 
 $MainWindow.Add_Shown({
         $MainWindow.Activate()
         $LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
-        Write-Output "MainWindow Activated"
-        $LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
-        Expand-Repo
-        $LogText.AppendText("Loading data files..." + [Environment]::NewLine);
-        Get-BucketCollection
-        Read-BucketCollection
-        $BucketsLoadedText.Text = $global:bucketNames.Count
-        # also set this
-        #$EmulatorsCountText
-        $LogText.AppendText("Adding to list..." + [Environment]::NewLine)
-        $BucketsList.Items.AddRange($global:bucketNames);
-        $LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
+
+        #$Runspace = [runspacefactory]::CreateRunspace()
+        #$PowerShell = [powershell]::Create()
+        #$PowerShell.Runspace = $Runspace
+        #$Runspace.Open()
+        #$PowerShell.AddScript({
+            $LogText.AppendText("Downloading and extracting latest emulator data..." + [Environment]::NewLine)
+            Expand-Repo
+            $LogText.AppendText("Loading data files..." + [Environment]::NewLine);
+            Get-BucketCollection
+            Read-BucketCollection
+            $BucketsLoadedText.Text = $global:bucketNames.Count
+            # also set this
+            #$EmulatorsCountText
+            $LogText.AppendText("Adding to list..." + [Environment]::NewLine)
+            $BucketsList.Items.AddRange($global:bucketNames);
+            $LogText.AppendText("done buckets list setup..." + [Environment]::NewLine)
+        #})
+        #$Job = $PowerShell.BeginInvoke()
+
+        # if doing an array of $Jobs use $Jobs.IsCompleted -contains $false
+        #while ($Job.IsCompleted -eq $false) {
+            #Start-Sleep -Milliseconds 100
+        #}
+        #$Output = $PowerShell.EndInvoke($Job)
+        #$LogText.AppendText("got output" + $Output + [Environment]::NewLine)
+        #$LogText.AppendText("background setup task completed" + [Environment]::NewLine)
     })
 
 function ScaleBucketLogo($file) {

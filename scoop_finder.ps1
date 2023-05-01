@@ -169,7 +169,7 @@ function Get-Bucket-Field {
 }
 
 function Get-Bucket-ExtractDir {
-    return Get-Bucket-Field -Field 'extract_dir' -LastOnly
+    return Get-Bucket-Field -Field 'extract_dir'
 }
 
 function Get-Bucket-Url {
