@@ -1,3 +1,19 @@
 {
-    "pester.autoRunOnSave": false
+    "pester.autoRunOnSave": false,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "xprotocol"
+            },
+            "previewLimit": 50,
+            "server": "174.138.179.250",
+            "port": 33060,
+            "driver": "MySQL",
+            "name": "mysqlcluster1",
+            "database": "my",
+            "username": "replication_user",
+            "password": "D34rtistP4ZZword",
+            "connectionTimeout": 60
+        }
+    ]
 }

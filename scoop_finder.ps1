@@ -23,59 +23,61 @@ function Update-Emulator {
     $extractDir = Get-Bucket-ExtractDir
     $newDir = Join-Path -Path $PWD -ChildPath "new"
     $baseDir = Join-Path -Path $newDir -ChildPath "$BucketName"
-    Write-Output "$baseDir Upgrading $BucketName located at $Path to version $($BucketData.version) with zip $urls"
+    Write-Host "$baseDir Upgrading $BucketName located at $Path to version $($BucketData.version) with zip $urls"
     New-Item -ItemType Directory -Path $baseDir -Force | Out-Null
     $bucketZip = $urls | Split-Path -Leaf
     Invoke-WebRequest -Uri $urls -OutFile $bucketZip
     try {
-        Write-Output "Extracting '$bucketZip'"
+        Write-Host "Extracting '$bucketZip'"
         $result = cmd /c ".\7zr.exe x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`" 2>&1"
+        Write-Host "Got $result"
         if ($LASTEXITCODE -eq 0) {
-            Remove-Item -Path $bucketZip -Force
+            #Remove-Item -Path $bucketZip -Force
             if ($bucketZip -match "\.tar\.") {
                 Get-ChildItem "$baseDir\*.tar" | ForEach-Object {
                     $bucketZip = $_
-                    Write-Output "Extracting '$bucketZip'"
+                    Write-Host "Extracting '$bucketZip'"
                     $result = cmd /c "tar.exe -xvf `"$bucketZip`" -C `"$baseDir`" 2>&1"
+                    Write-Host "Got $result"
                     if ($LASTEXITCODE -eq 0) {
-                        Remove-Item -Path $bucketZip -Force
+                        #Remove-Item -Path $bucketZip -Force
                     } else {
-                        Write-Output "got extraction error: $result"
+                        Write-Host "got extraction error: $result"
                     }
                 }
             }
         } else {
-            Write-Output "got extraction error: $result"
+            Write-Host "got extraction error: $result"
         }
     }
     catch {
         <#Do this if a terminating exception happens#>
-        Write-Output "Something threw an exception"
-        Write-Output $_
+        Write-Host "Something threw an exception"
+        Write-Host $_
     }
     if ($LASTEXITCODE -eq 0) {
         if ($extractDir -ne '') {
             $oldDir = Join-Path -Path $newDir -ChildPath "old"
             $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
-            Write-Output "Only keeping the '$extractDir' directory"
+            Write-Host "Only keeping the '$extractDir' directory"
             if (Test-Path -Path $oldDir) {
                 Remove-Item -Recurse -Force "$oldDir"
             }
-            Write-Output "Moving from '$baseDir' to '$oldDir' directory"
+            Write-Host "Moving from '$baseDir' to '$oldDir' directory"
             Move-Item -Force "$baseDir" "$oldDir"
-            Write-Output "Moving from '$moveDir' to 'baseDir' directory"
+            Write-Host "Moving from '$moveDir' to 'baseDir' directory"
             Move-Item -Force "$moveDir" "$baseDir"
             if (Test-Path -Path $oldDir) {
                 Remove-Item -Recurse -Force "$oldDir"
             }
         }
         $backupDir = Join-Path -Path $PWD -ChildPath "backup/$BucketName"
-        Write-Output "Backing up $Path to $backupDir"
+        Write-Host "Backing up $Path to $backupDir"
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
         Copy-Item -Path "$Path\*" -Destination "$backupDir" -Recurse
-        Write-Output "Overwriting $Path with files from $baseDir"
+        Write-Host "Overwriting $Path with files from $baseDir"
         Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
-        Write-Output "Cleaning up temp files in $baseDir"
+        Write-Host "Cleaning up temp files in $baseDir"
         Remove-Item -Recurse -Force "$baseDir"
         if (-Not (Test-Path -Path "$newDir\*")) {
             Remove-Item "$newDir"
@@ -212,7 +214,7 @@ function Read-BucketCollection {
                 }
             }
         }
-        #Write-Output("Bucket {0}: {1} {2} {3}" -f $BucketName, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
+        #Write-Host("Bucket {0}: {1} {2} {3}" -f $BucketName, ($bins -join ", "), ($urls), (($extractDir -join ", ")))
     }
 }
 
@@ -237,7 +239,7 @@ function Find-Bucket-Matches {
 
 function Find-Emu-Matches {
     foreach ($fullPath in $global:regexMatches) {
-        #Write-Output "Got: $fullPath"
+        #Write-Host "Got: $fullPath"
         foreach ($bin in $global:bin2buckets.Keys) {
             if ($fullPath.EndsWith($bin)) {
                 $dirName = Split-Path $fullPath -Parent
