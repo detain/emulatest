@@ -25,13 +25,13 @@ function Save-Emulatest() {
     # Convert the object to JSON format
     $json = $emulatest | ConvertTo-Json -Depth 2
     # Write the JSON string to a file
-    $jsonPath = "$($env:USERPROFILE)\.emulatest.json"
+    $jsonPath = "$($env:USERPROFILE)\.emulatest\settings.json"
     Set-Content -Path $jsonPath -Value $json
 }
 
 function Restore-Emulatest() {
     # Read the JSON string from the file
-    $jsonPath = "$($env:USERPROFILE)\.emulatest.json"
+    $jsonPath = "$($env:USERPROFILE)\.emulatest\settings.json"
     $json = Get-Content -Path $jsonPath -Raw
     # Convert the JSON string to an object
     $emulatest = $json | ConvertFrom-Json
@@ -108,6 +108,7 @@ $UpdateButton.Add_Click({
 $MainWindow.Add_Shown({
         $MainWindow.Activate()
         $LogText.AppendText("Emulatest Emulation Updater..." + [Environment]::NewLine)
+        New-Item -ItemType Directory -Path "$($env:USERPROFILE)\.emulatest" -Force | Out-Null
 
         #$Runspace = [runspacefactory]::CreateRunspace()
         #$PowerShell = [powershell]::Create()

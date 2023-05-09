@@ -8,6 +8,7 @@ $global:allBuckets = @{}
 $global:bin2buckets = @{}
 $global:regexes = @()
 $global:totalBins = 0
+$global:scriptDir = $PSScriptRoot
 
 function Update-Emulator {
     [CmdletBinding()]
@@ -21,24 +22,46 @@ function Update-Emulator {
     $BucketData = Restore-Bucket -BucketName $BucketName
     $urls = Get-Bucket-Url
     $extractDir = Get-Bucket-ExtractDir
-    $newDir = Join-Path -Path $PWD -ChildPath "new"
+    $emulatestPath = Join-Path $env:USERPROFILE ".emulatest"
+    $newDir = Join-Path $emulatestPath "new"
     $baseDir = Join-Path -Path $newDir -ChildPath "$BucketName"
     Write-Host "$baseDir Upgrading $BucketName located at $Path to version $($BucketData.version) with zip $urls"
     New-Item -ItemType Directory -Path $baseDir -Force | Out-Null
     $bucketZip = $urls | Split-Path -Leaf
-    Invoke-WebRequest -Uri $urls -OutFile $bucketZip
+    $bucketZip = "$emulatestPath\$bucketZip"
+    Invoke-WebRequest -Uri $urls -UseBasicParsing -MaximumRedirection 10 -OutFile $bucketZip
     try {
         Write-Host "Extracting '$bucketZip'"
-        $result = cmd /c ".\7zr.exe x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`" 2>&1"
-        Write-Host "Got $result"
+        $baseDrive = Split-Path -Qualifier $env:USERPROFILE
+        #$baseDrive
+        #Set-Location $baseDrive
+        #Set-Location $emulatestPath
+        $emulatestPath = Join-Path $env:USERPROFILE ".emulatest"
+        $newBucketPath = Join-Path $emulatestPath "new\$BucketName"
+        if (-not (Test-Path $newBucketPath)) {
+            New-Item -ItemType Directory -Path $newBucketPath -Force | Out-Null
+        }
+        $zipFilePath = Join-Path $emulatestPath "$BucketName.zip"
+        $exePath = Join-Path $PSScriptRoot "7zr.exe"
+        Invoke-WebRequest -Uri $urls -UseBasicParsing -MaximumRedirection 10 -OutFile $zipFilePath
+        Set-Location $emulatestPath
+        & 7z.exe x $($urls | Split-Path -Leaf) "-onew\$BucketName" -aoa
+        #$cmd = "$global:scriptDir\7zr.exe x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`"";
+        #Write-Host "Running Command: $cmd"
+        #$result = cmd /c $cmd
+        #$result = cmd /c "$global:scriptDir\7zr.exe" x -bb0 -aoa -o"$baseDir" "$bucketZip"
+        #& "$global:scriptDir\7zr.exe" x -bb0 -aoa -o"$baseDir" "$bucketZip"
+        Write-Host "Got Exit Code $LASTEXITCODE Result $result"
         if ($LASTEXITCODE -eq 0) {
             #Remove-Item -Path $bucketZip -Force
             if ($bucketZip -match "\.tar\.") {
                 Get-ChildItem "$baseDir\*.tar" | ForEach-Object {
                     $bucketZip = $_
                     Write-Host "Extracting '$bucketZip'"
-                    $result = cmd /c "tar.exe -xvf `"$bucketZip`" -C `"$baseDir`" 2>&1"
-                    Write-Host "Got $result"
+                    $cmd = "tar.exe -xvf `"$bucketZip`" -C `"$baseDir`" 2>&1"
+                    Write-Host "Running Command: $cmd"
+                    $result = cmd /c $cmd
+                    Write-Host "Got Exit Code $LASTEXITCODE Result $result`n"
                     if ($LASTEXITCODE -eq 0) {
                         #Remove-Item -Path $bucketZip -Force
                     } else {
@@ -57,47 +80,51 @@ function Update-Emulator {
     }
     if ($LASTEXITCODE -eq 0) {
         if ($extractDir -ne '') {
-            $oldDir = Join-Path -Path $newDir -ChildPath "old"
-            $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
-            Write-Host "Only keeping the '$extractDir' directory"
-            if (Test-Path -Path $oldDir) {
-                Remove-Item -Recurse -Force "$oldDir"
-            }
-            Write-Host "Moving from '$baseDir' to '$oldDir' directory"
-            Move-Item -Force "$baseDir" "$oldDir"
-            Write-Host "Moving from '$moveDir' to 'baseDir' directory"
-            Move-Item -Force "$moveDir" "$baseDir"
-            if (Test-Path -Path $oldDir) {
-                Remove-Item -Recurse -Force "$oldDir"
-            }
+        #    $oldDir = Join-Path -Path $newDir -ChildPath "old"
+        #    $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
+        #    Write-Host "Only keeping the '$extractDir' directory"
+        #    if (Test-Path -Path $oldDir) {
+        #        Remove-Item -Recurse -Force "$oldDir"
+        #    }
+        #    Write-Host "Moving from '$baseDir' to '$oldDir' directory"
+        #    Move-Item -Force "$baseDir" "$oldDir"
+        #    Write-Host "Moving from '$moveDir' to 'baseDir' directory"
+        #    Move-Item -Force "$moveDir" "$baseDir"
+        #    if (Test-Path -Path $oldDir) {
+        #        Remove-Item -Recurse -Force "$oldDir"
+        #    }
         }
-        $backupDir = Join-Path -Path $PWD -ChildPath "backup/$BucketName"
+        $backupDir = Join-Path -Path "$($env:USERPROFILE)\.emulatest" -ChildPath "backup\$BucketName"
         Write-Host "Backing up $Path to $backupDir"
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
         Copy-Item -Path "$Path\*" -Destination "$backupDir" -Recurse
-        Write-Host "Overwriting $Path with files from $baseDir"
-        Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
-        Write-Host "Cleaning up temp files in $baseDir"
-        Remove-Item -Recurse -Force "$baseDir"
-        if (-Not (Test-Path -Path "$newDir\*")) {
-            Remove-Item "$newDir"
-        }
+
+        #Write-Host "Overwriting $Path with files from $baseDir"
+        #Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
+
+        #Write-Host "Cleaning up temp files in $baseDir"
+        #Remove-Item -Recurse -Force "$baseDir"
+        #if (-Not (Test-Path -Path "$newDir\*")) {
+        #    Remove-Item "$newDir"
+        #}
     }
+    Set-Location $global:scriptDir
 }
 
 function Expand-Repo {
-    Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "master.zip"
-    Expand-Archive -Path "master.zip" -DestinationPath ".\" -Force
-    Remove-Item -Path "master.zip" -Force
+    New-Item -ItemType Directory -Path "$($env:USERPROFILE)\.emulatest" -Force | Out-Null
+    Invoke-WebRequest -Uri "https://github.com/detain/scoop-emulators/archive/refs/heads/master.zip" -OutFile "$($env:USERPROFILE)\.emulatest\master.zip"
+    Expand-Archive -Path "$($env:USERPROFILE)\.emulatest\master.zip" -DestinationPath "$($env:USERPROFILE)\.emulatest" -Force
+    Remove-Item -Path "$($env:USERPROFILE)\.emulatest\master.zip" -Force
 }
 
 function Remove-Repo {
-    Remove-Item -Path scoop-emulators-master -Recurse -Force
+    Remove-Item -Path "$($env:USERPROFILE)\.emulatest\scoop-emulators-master" -Recurse -Force
 }
 
 function Get-BucketCollection {
     $global:bucketNames = @()
-    Get-ChildItem 'scoop-emulators-master\bucket\*\*.json' | ForEach-Object {
+    Get-ChildItem "$($env:USERPROFILE)\.emulatest\scoop-emulators-master\bucket\*\*.json" | ForEach-Object {
         $fileName = $_
         $global:bucketNames += [System.IO.Path]::GetFileNameWithoutExtension($fileName)
     }
@@ -123,7 +150,7 @@ function Restore-Bucket {
             if (Compare-Numeric $letter) {
                 $letter = "#"
             }
-            $fileName = "scoop-emulators-master\bucket\$letter\$BucketName.json"
+            $fileName = "$($env:USERPROFILE)\.emulatest\scoop-emulators-master\bucket\$letter\$BucketName.json"
             $data = Get-Content $fileName | ConvertFrom-Json -AsHashtable
             if ($data.ContainsKey("##")) {
                 foreach ($row in $data["##"]) {
