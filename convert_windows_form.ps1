@@ -4,7 +4,7 @@ Convert-Form -Path "E:\dev\emulatest-windows-form\MainWindow.Designer.cs" `
   -replace '\$BucketsTable\.(Row|Column)Styles\.Add\(New-Object System\.Windows\.Forms\.(Row|Column)Style\(System\.Windows\.Forms\.SizeType\.(Percent|Absolute), (.*)F\)\)', `
   '$BucketsTable.$1Styles.Add((New-Object System.Windows.Forms.$2Style([System.Windows.Forms.SizeType]::$3, $4)))' `
   -replace 'function OnFormClosing_MainWindow\{', `
-  ". (`".\scoop_finder.ps1`")`n. (`".\Functions.ps1`")`n`nfunction OnFormClosing_MainWindow{`n`tRemove-Repo" `
+  ". (`".\Emulatest.ps1`")`n. (`".\GUI.ps1`")`n`nfunction OnFormClosing_MainWindow{`n`tRemove-Repo" `
   -replace '\$EmulatorsTable\.Columns\.AddRange\(@\((\s*\$Select,\s*\$Path,\s*\$Emulator,\s*\$CurrentVersion,\s*\$NewVersion\s*)\)\)', `
   '$EmulatorsTable.Columns.AddRange($1)' `
   -replace '\.FillWeight = (\d+)F', `

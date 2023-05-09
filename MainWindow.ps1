@@ -510,8 +510,8 @@ $MainWindow.Name = "MainWindow"
 $MainWindow.Padding = New-Object System.Windows.Forms.Padding(5)
 $MainWindow.Text = "EmuLatest"
 
-. (".\scoop_finder.ps1")
-. (".\Functions.ps1")
+. (".\Emulatest.ps1")
+. (".\GUI.ps1")
 
 function OnFormClosing_MainWindow{
 	Remove-Repo 
