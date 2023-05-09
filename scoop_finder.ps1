@@ -43,17 +43,19 @@ function Update-Emulator {
         }
         $zipFilePath = Join-Path $emulatestPath "$BucketName.zip"
         $exePath = Join-Path $PSScriptRoot "7zr.exe"
-        Invoke-WebRequest -Uri $urls -UseBasicParsing -MaximumRedirection 10 -OutFile $zipFilePath
+        #Invoke-WebRequest -Uri $urls -UseBasicParsing -MaximumRedirection 10 -OutFile $zipFilePath
         Set-Location $emulatestPath
-        & 7z.exe x $($urls | Split-Path -Leaf) "-onew\$BucketName" -aoa
+        #& $exePath x $($urls | Split-Path -Leaf) "-onew\$BucketName" -aoa -bb0
+        $cmd = "7z.exe x $($urls | Split-Path -Leaf) `"-onew\$BucketName`" -aoa -bb0"
         #$cmd = "$global:scriptDir\7zr.exe x -bb0 -aoa -o`"$baseDir`" `"$bucketZip`"";
-        #Write-Host "Running Command: $cmd"
-        #$result = cmd /c $cmd
+        Write-Host "Running Command: $cmd"
+        $result = cmd /c $cmd
         #$result = cmd /c "$global:scriptDir\7zr.exe" x -bb0 -aoa -o"$baseDir" "$bucketZip"
         #& "$global:scriptDir\7zr.exe" x -bb0 -aoa -o"$baseDir" "$bucketZip"
+        #Write-Host "Got Exit Code $LASTEXITCODE"
         Write-Host "Got Exit Code $LASTEXITCODE Result $result"
         if ($LASTEXITCODE -eq 0) {
-            #Remove-Item -Path $bucketZip -Force
+            Remove-Item -Path $bucketZip -Force
             if ($bucketZip -match "\.tar\.") {
                 Get-ChildItem "$baseDir\*.tar" | ForEach-Object {
                     $bucketZip = $_
@@ -65,12 +67,12 @@ function Update-Emulator {
                     if ($LASTEXITCODE -eq 0) {
                         #Remove-Item -Path $bucketZip -Force
                     } else {
-                        Write-Host "got extraction error: $result"
+                        Write-Host "got tar extraction error: $result`n"
                     }
                 }
             }
         } else {
-            Write-Host "got extraction error: $result"
+            Write-Host "got extraction error: $result`n"
         }
     }
     catch {
@@ -80,33 +82,33 @@ function Update-Emulator {
     }
     if ($LASTEXITCODE -eq 0) {
         if ($extractDir -ne '') {
-        #    $oldDir = Join-Path -Path $newDir -ChildPath "old"
-        #    $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
-        #    Write-Host "Only keeping the '$extractDir' directory"
-        #    if (Test-Path -Path $oldDir) {
-        #        Remove-Item -Recurse -Force "$oldDir"
-        #    }
-        #    Write-Host "Moving from '$baseDir' to '$oldDir' directory"
-        #    Move-Item -Force "$baseDir" "$oldDir"
-        #    Write-Host "Moving from '$moveDir' to 'baseDir' directory"
-        #    Move-Item -Force "$moveDir" "$baseDir"
-        #    if (Test-Path -Path $oldDir) {
-        #        Remove-Item -Recurse -Force "$oldDir"
-        #    }
+            $oldDir = Join-Path -Path $newDir -ChildPath "old"
+            $moveDir = Join-Path -Path $oldDir -ChildPath "$extractDir"
+            Write-Host "Only keeping the '$extractDir' directory'n"
+            if (Test-Path -Path $oldDir) {
+                Remove-Item -Recurse -Force "$oldDir"
+            }
+            Write-Host "Moving from '$baseDir' to '$oldDir' directory'n"
+            Move-Item -Force "$baseDir" "$oldDir"
+            Write-Host "Moving from '$moveDir' to 'baseDir' directory'n"
+            Move-Item -Force "$moveDir" "$baseDir"
+            if (Test-Path -Path $oldDir) {
+                Remove-Item -Recurse -Force "$oldDir"
+            }
         }
         $backupDir = Join-Path -Path "$($env:USERPROFILE)\.emulatest" -ChildPath "backup\$BucketName"
-        Write-Host "Backing up $Path to $backupDir"
+        Write-Host "Backing up $Path to $backupDir`n"
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
         Copy-Item -Path "$Path\*" -Destination "$backupDir" -Recurse
 
-        #Write-Host "Overwriting $Path with files from $baseDir"
-        #Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
+        Write-Host "Overwriting $Path with files from $baseDir"
+        Copy-Item -Path "$baseDir\*" -Destination "$Path" -Recurse -Force
 
-        #Write-Host "Cleaning up temp files in $baseDir"
-        #Remove-Item -Recurse -Force "$baseDir"
-        #if (-Not (Test-Path -Path "$newDir\*")) {
-        #    Remove-Item "$newDir"
-        #}
+        Write-Host "Cleaning up temp files in $baseDir"
+        Remove-Item -Recurse -Force "$baseDir"
+        if (-Not (Test-Path -Path "$newDir\*")) {
+            Remove-Item "$newDir"
+        }
     }
     Set-Location $global:scriptDir
 }
